@@ -1,0 +1,358 @@
+<div class="borrower-profile">
+  <!-- Header -->
+  <header class="profile-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>👤 My Profile</h1>
+        <p class="header-subtitle">Manage your personal and financial information</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" type="button" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="showSuccessMessage">
+    <div class="success-content">
+      <span class="success-icon">✅</span>
+      <span class="success-text">Profile updated successfully!</span>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <!-- Profile Summary Card -->
+    <div class="profile-summary-card">
+      <div class="summary-header">
+        <div class="user-avatar">
+          <span class="avatar-text">{{ currentUser?.firstName?.charAt(0) || 'U' }}{{ currentUser?.lastName?.charAt(0) || 'S' }}</span>
+        </div>
+        <div class="user-info">
+          <h2>{{ currentUser?.firstName }} {{ currentUser?.lastName }}</h2>
+          <p class="user-email">{{ currentUser?.email }}</p>
+          <span class="user-role">Borrower</span>
+        </div>
+        <div class="profile-actions">
+          <button 
+            class="edit-btn" 
+            (click)="toggleEdit()"
+            [class.editing]="isEditing"
+          >
+            {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="summary-stats">
+        <div class="stat-item">
+          <span class="stat-label">Credit Score</span>
+          <span class="stat-value" [class]="getCreditScoreClass()">
+            {{ currentUser?.creditScore || 'N/A' }}
+          </span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Monthly Income</span>
+          <span class="stat-value">₹{{ (currentUser?.monthlyIncome || 0).toLocaleString() }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Employment</span>
+          <span class="stat-value">{{ currentUser?.employmentStatus || 'N/A' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="profile-form-card">
+      <div class="form-header">
+        <h3>Personal Information</h3>
+        <p>Update your details to improve your loan eligibility</p>
+      </div>
+      
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+        <div class="form-section">
+          <h4>Basic Details</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="firstName" class="form-label">
+                <span class="required">*</span>
+                First Name
+              </label>
+              <input 
+                id="firstName"
+                type="text" 
+                class="form-input" 
+                formControlName="firstName"
+                placeholder="Enter first name"
+                [class.error]="isFieldInvalid('firstName')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('firstName')">
+                {{ getFieldError('firstName') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName" class="form-label">
+                <span class="required">*</span>
+                Last Name
+              </label>
+              <input 
+                id="lastName"
+                type="text" 
+                class="form-input" 
+                formControlName="lastName"
+                placeholder="Enter last name"
+                [class.error]="isFieldInvalid('lastName')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('lastName')">
+                {{ getFieldError('lastName') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="email" class="form-label">
+                <span class="required">*</span>
+                Email
+              </label>
+              <input 
+                id="email"
+                type="email" 
+                class="form-input" 
+                formControlName="email"
+                placeholder="Enter email address"
+                [class.error]="isFieldInvalid('email')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('email')">
+                {{ getFieldError('email') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="phone" class="form-label">
+                <span class="required">*</span>
+                Phone Number
+              </label>
+              <input 
+                id="phone"
+                type="tel" 
+                class="form-input" 
+                formControlName="phone"
+                placeholder="Enter 10-digit phone number"
+                [class.error]="isFieldInvalid('phone')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('phone')">
+                {{ getFieldError('phone') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="dateOfBirth" class="form-label">
+                <span class="required">*</span>
+                Date of Birth
+              </label>
+              <input 
+                id="dateOfBirth"
+                type="date" 
+                class="form-input" 
+                formControlName="dateOfBirth"
+                [class.error]="isFieldInvalid('dateOfBirth')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('dateOfBirth')">
+                {{ getFieldError('dateOfBirth') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="company" class="form-label">
+                <span class="required">*</span>
+                Company
+              </label>
+              <input 
+                id="company"
+                type="text" 
+                class="form-input" 
+                formControlName="company"
+                placeholder="Enter company name"
+                [class.error]="isFieldInvalid('company')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('company')">
+                {{ getFieldError('company') }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h4>Financial Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="monthlyIncome" class="form-label">
+                <span class="required">*</span>
+                Monthly Income (₹)
+              </label>
+              <input 
+                id="monthlyIncome"
+                type="number" 
+                class="form-input" 
+                formControlName="monthlyIncome"
+                placeholder="Enter monthly income"
+                [class.error]="isFieldInvalid('monthlyIncome')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('monthlyIncome')">
+                {{ getFieldError('monthlyIncome') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="creditScore" class="form-label">
+                <span class="required">*</span>
+                Credit Score
+              </label>
+              <input 
+                id="creditScore"
+                type="number" 
+                class="form-input" 
+                formControlName="creditScore"
+                placeholder="Enter credit score (300-850)"
+                [class.error]="isFieldInvalid('creditScore')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('creditScore')">
+                {{ getFieldError('creditScore') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="employmentStatus" class="form-label">
+                <span class="required">*</span>
+                Employment Status
+              </label>
+              <select 
+                id="employmentStatus"
+                class="form-input" 
+                formControlName="employmentStatus"
+                [class.error]="isFieldInvalid('employmentStatus')"
+                [disabled]="!isEditing"
+              >
+                <option value="">Select employment status</option>
+                <option value="EMPLOYED">Employed</option>
+                <option value="SELF_EMPLOYED">Self Employed</option>
+                <option value="STUDENT">Student</option>
+                <option value="NOT_EMPLOYED">Not Employed</option>
+              </select>
+              <div class="error-message" *ngIf="isFieldInvalid('employmentStatus')">
+                {{ getFieldError('employmentStatus') }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h4>Address Information</h4>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="address" class="form-label">
+                <span class="required">*</span>
+                Address
+              </label>
+              <textarea 
+                id="address"
+                class="form-input" 
+                formControlName="address"
+                placeholder="Enter your complete address"
+                rows="3"
+                [class.error]="isFieldInvalid('address')"
+                [disabled]="!isEditing"
+              ></textarea>
+              <div class="error-message" *ngIf="isFieldInvalid('address')">
+                {{ getFieldError('address') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="city" class="form-label">
+                <span class="required">*</span>
+                City
+              </label>
+              <input 
+                id="city"
+                type="text" 
+                class="form-input" 
+                formControlName="city"
+                placeholder="Enter city"
+                [class.error]="isFieldInvalid('city')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('city')">
+                {{ getFieldError('city') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="state" class="form-label">
+                <span class="required">*</span>
+                State
+              </label>
+              <input 
+                id="state"
+                type="text" 
+                class="form-input" 
+                formControlName="state"
+                placeholder="Enter state"
+                [class.error]="isFieldInvalid('state')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('state')">
+                {{ getFieldError('state') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="pincode" class="form-label">
+                <span class="required">*</span>
+                Pincode
+              </label>
+              <input 
+                id="pincode"
+                type="text" 
+                class="form-input" 
+                formControlName="pincode"
+                placeholder="Enter 6-digit pincode"
+                [class.error]="isFieldInvalid('pincode')"
+                [disabled]="!isEditing"
+              />
+              <div class="error-message" *ngIf="isFieldInvalid('pincode')">
+                {{ getFieldError('pincode') }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions" *ngIf="isEditing">
+          <button 
+            type="submit" 
+            class="save-btn" 
+            [disabled]="profileForm.invalid || isSaving"
+          >
+            <span *ngIf="!isSaving">💾 Save Changes</span>
+            <span *ngIf="isSaving" class="loading-spinner">Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

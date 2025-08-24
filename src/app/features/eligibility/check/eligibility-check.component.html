@@ -1,0 +1,106 @@
+<div class="eligibility-check">
+  <!-- Header -->
+  <header class="eligibility-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>🔍 Loan Eligibility Results</h1>
+        <p class="header-subtitle">Application #{{ applicationId }} - See which lenders you qualify for</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Results Card -->
+  <div class="results-card">
+    <div class="results-header">
+      <h2 class="results-title">Eligibility Summary</h2>
+      <p class="results-subtitle">
+        {{ getEligibleCount() }} out of {{ getTotalCount() }} lenders are eligible for your application
+      </p>
+    </div>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Checking eligibility...</p>
+    </div>
+    
+    <!-- Error State -->
+    <div *ngIf="!isLoading && errorMessage" class="error-container">
+      <div class="error-icon">⚠️</div>
+      <p class="error-text">{{ errorMessage }}</p>
+    </div>
+    
+    <!-- Results Content -->
+    <div *ngIf="!isLoading && !errorMessage" class="results-content">
+      <!-- No Results -->
+      <div *ngIf="eligibilityResults.length === 0" class="no-results">
+        <div class="no-results-icon">📋</div>
+        <h3>No Lenders Found</h3>
+        <p>No lenders are currently available for eligibility check.</p>
+      </div>
+      
+      <!-- Results Table -->
+      <div *ngIf="eligibilityResults.length > 0" class="results-table-container">
+        <div class="table-header">
+          <h3>Lender Eligibility Results</h3>
+          <span class="results-count">{{ eligibilityResults.length }} lenders analyzed</span>
+        </div>
+        
+        <div class="results-table">
+          <div class="table-row header">
+            <div class="table-cell">Lender Name</div>
+            <div class="table-cell">Max Loan</div>
+            <div class="table-cell">Age Range</div>
+            <div class="table-cell">Min Salary</div>
+            <div class="table-cell">Min Score</div>
+            <div class="table-cell">Status</div>
+          </div>
+          
+          <div *ngFor="let result of eligibilityResults" class="table-row">
+            <div class="table-cell lender-name">{{ result.lenderName }}</div>
+            <div class="table-cell">{{ formatCurrency(result.rule.maxLoanAmount) }}</div>
+            <div class="table-cell">{{ result.rule.minAge }} - {{ result.rule.maxAge }}</div>
+            <div class="table-cell">{{ formatCurrency(result.rule.minSalary) }}</div>
+            <div class="table-cell">{{ result.rule.minCreditScore }}</div>
+            <div class="table-cell">
+              <span *ngIf="result.eligible" class="status-badge eligible">
+                <span class="status-icon">✅</span>
+                Eligible
+              </span>
+              <span *ngIf="!result.eligible" class="status-badge not-eligible">
+                <span class="status-icon">❌</span>
+                Not Eligible
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn-primary" routerLink="/customer/my-applications">
+          <span class="btn-icon">📋</span>
+          View My Applications
+        </button>
+        <button class="btn-secondary" routerLink="/customer/apply-loan">
+          <span class="btn-icon">📝</span>
+          Apply for Another Loan
+        </button>
+        <button class="btn-ghost" routerLink="/dashboard">
+          <span class="btn-icon">🏠</span>
+          Back to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

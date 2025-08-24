@@ -1,0 +1,225 @@
+<div class="admin-applications-container">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="app-title">📝 Applications Overview</h1>
+        <div class="user-info">
+          <button class="btn btn--ghost" (click)="goBack()">
+            <span>←</span>
+            Back to Dashboard
+          </button>
+          <button class="btn btn--danger" (click)="logout()">
+            <span>🚪</span>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Applications Overview Card -->
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">Loan Applications Overview</h2>
+          <p class="card__subtitle">Monitor and review all loan applications across the platform</p>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="text-center">
+          <div class="spinner"></div>
+          <p>Loading applications...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage" class="form__error">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Applications Content -->
+        <div *ngIf="!isLoading && !errorMessage">
+          <!-- Statistics Summary -->
+          <div class="stats-summary">
+            <div class="stat-card">
+              <div class="stat-icon">📊</div>
+              <div class="stat-content">
+                <h4>Total Applications</h4>
+                <div class="stat-value">{{ getApplicationStats().total }}</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-content">
+                <h4>Approved</h4>
+                <div class="stat-value">{{ getApplicationStats().approved }}</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon">❌</div>
+              <div class="stat-content">
+                <h4>Rejected</h4>
+                <div class="stat-value">{{ getApplicationStats().rejected }}</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-content">
+                <h4>Pending</h4>
+                <div class="stat-value">{{ getApplicationStats().pending }}</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-content">
+                <h4>Total Volume</h4>
+                <div class="stat-value">{{ getTotalLoanVolume() }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Applications Table -->
+          <div *ngIf="applications.length > 0; else noApplications" class="table-section">
+            <h3 class="section-title">Recent Applications</h3>
+            <table class="table">
+              <thead class="table__header">
+                <tr>
+                  <th>ID</th>
+                  <th>Borrower</th>
+                  <th>Amount</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                  <th>Eligibility</th>
+                  <th>Applied Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let application of applications" class="table__row">
+                  <td class="table__cell">{{ application.id }}</td>
+                  <td class="table__cell">{{ application.borrowerId }}</td>
+                  <td class="table__cell">{{ formatCurrency(application.loanAmount) }}</td>
+                  <td class="table__cell">{{ application.loanPurpose }}</td>
+                  <td class="table__cell">
+                    <span class="badge" [ngClass]="getStatusBadgeClass(application.status)">
+                      {{ application.status }}
+                    </span>
+                  </td>
+                  <td class="table__cell">
+                    <span class="eligibility-score" [ngClass]="getEligibilityClass(application.eligibilityScore)">
+                      {{ application.eligibilityScore || 'N/A' }}
+                    </span>
+                  </td>
+                  <td class="table__cell">{{ formatDate(application.appliedDate) }}</td>
+                  <td class="table__cell">
+                    <button class="btn btn--ghost" (click)="viewApplicationDetails(application)">
+                      <span>👁️</span>
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- No Applications State -->
+          <ng-template #noApplications>
+            <div class="text-center mt-lg">
+              <div style="font-size: 4rem; margin-bottom: 20px;">📝</div>
+              <h3>No Applications Found</h3>
+              <p>There are currently no loan applications on the platform.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Application Details Modal -->
+  <div *ngIf="showApplicationDetails && selectedApplication" class="modal-overlay" (click)="closeApplicationDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Application Details</h3>
+        <button class="modal-close" (click)="closeApplicationDetails()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Application ID:</label>
+            <span>{{ selectedApplication.id }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Borrower ID:</label>
+            <span>{{ selectedApplication.borrowerId }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Lender ID:</label>
+            <span>{{ selectedApplication.lenderId }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Loan Amount:</label>
+            <span>{{ formatCurrency(selectedApplication.loanAmount) }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Loan Purpose:</label>
+            <span>{{ selectedApplication.loanPurpose }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Loan Term:</label>
+            <span>{{ selectedApplication.loanTerm }} months</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Status:</label>
+            <span class="badge" [ngClass]="getStatusBadgeClass(selectedApplication.status)">
+              {{ selectedApplication.status }}
+            </span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Eligibility Score:</label>
+            <span class="eligibility-score" [ngClass]="getEligibilityClass(selectedApplication.eligibilityScore)">
+              {{ selectedApplication.eligibilityScore || 'N/A' }}
+            </span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Applied Date:</label>
+            <span>{{ formatDate(selectedApplication.appliedDate) }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Monthly Income:</label>
+            <span>{{ formatCurrency(selectedApplication.monthlyIncome) }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Credit Score:</label>
+            <span>{{ selectedApplication.creditScore || 'N/A' }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Employment Status:</label>
+            <span>{{ selectedApplication.employmentStatus || 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn--ghost" (click)="closeApplicationDetails()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

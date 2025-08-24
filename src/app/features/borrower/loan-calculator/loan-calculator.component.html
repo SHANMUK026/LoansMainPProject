@@ -1,0 +1,180 @@
+<div class="loan-calculator">
+  <!-- Header -->
+  <header class="calculator-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>🧮 Smart Loan Calculator</h1>
+        <p class="header-subtitle">Calculate your loan EMI, interest, and eligibility instantly</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Calculator Content -->
+  <div class="calculator-content">
+    <!-- Calculator Form Card -->
+    <div class="calculator-form-card">
+      <h2 class="form-title">Loan Details</h2>
+      <p class="form-subtitle">Enter your loan requirements to get instant calculations</p>
+      
+      <form [formGroup]="calculatorForm" (ngSubmit)="calculateLoan()" class="calculator-form">
+        <div class="form-group">
+          <label for="loanAmount" class="form-label">
+            <span class="required">*</span>
+            Loan Amount (₹)
+          </label>
+          <div class="amount-input">
+            <input 
+              id="loanAmount"
+              type="number" 
+              class="form-input" 
+              formControlName="loanAmount"
+              placeholder="Enter loan amount"
+              [class.error]="calculatorForm.get('loanAmount')?.invalid && calculatorForm.get('loanAmount')?.touched"
+            />
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="interestRate" class="form-label">
+            <span class="required">*</span>
+            Interest Rate (% per annum)
+          </label>
+          <input 
+            id="interestRate"
+            type="number" 
+            class="form-input" 
+            formControlName="interestRate"
+            placeholder="Enter annual interest rate"
+            step="0.1"
+            [class.error]="calculatorForm.get('interestRate')?.invalid && calculatorForm.get('interestRate')?.touched"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="tenureYears" class="form-label">
+            <span class="required">*</span>
+            Loan Tenure (Years)
+          </label>
+          <input 
+            id="tenureYears"
+            type="number" 
+            class="form-input" 
+            formControlName="tenureYears"
+            placeholder="Enter loan tenure in years"
+            [class.error]="calculatorForm.get('tenureYears')?.invalid && calculatorForm.get('tenureYears')?.touched"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="processingFee" class="form-label">
+            <span class="required">*</span>
+            Processing Fee (₹)
+          </label>
+          <input 
+            id="processingFee"
+            type="number" 
+            class="form-input" 
+            formControlName="processingFee"
+            placeholder="Enter processing fee"
+            [class.error]="calculatorForm.get('processingFee')?.invalid && calculatorForm.get('processingFee')?.touched"
+          />
+        </div>
+        
+        <button type="submit" class="btn-calculate" [disabled]="calculatorForm.invalid || isCalculating">
+          {{ isCalculating ? 'Calculating...' : 'Calculate Loan' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Results Card -->
+    <div class="results-card" *ngIf="calculationResults">
+      <h2 class="results-title">Your Loan Summary</h2>
+      <p class="results-subtitle">Here's a detailed breakdown of your loan calculation</p>
+      
+      <div class="results-display">
+        <div class="result-item">
+          <div class="result-header">
+            <span class="result-label">Monthly EMI</span>
+            <span class="result-icon">💰</span>
+          </div>
+          <p class="result-value">₹{{ calculationResults.monthlyEMI.toLocaleString() }}</p>
+          <p class="result-description">Your monthly payment amount</p>
+        </div>
+        
+        <div class="result-item">
+          <div class="result-header">
+            <span class="result-label">Total Interest</span>
+            <span class="result-icon">📊</span>
+          </div>
+          <p class="result-value">₹{{ calculationResults.totalInterest.toLocaleString() }}</p>
+          <p class="result-description">Total interest over loan tenure</p>
+        </div>
+        
+        <div class="result-item">
+          <div class="result-header">
+            <span class="result-label">Total Amount</span>
+            <span class="result-icon">💳</span>
+          </div>
+          <p class="result-value">₹{{ calculationResults.totalAmount.toLocaleString() }}</p>
+          <p class="result-description">Total amount to be repaid</p>
+        </div>
+        
+        <div class="result-item">
+          <div class="result-header">
+            <span class="result-label">Processing Fee</span>
+            <span class="result-icon">⚡</span>
+          </div>
+          <p class="result-value">₹{{ calculationResults.processingFee.toLocaleString() }}</p>
+          <p class="result-description">One-time processing charge</p>
+        </div>
+      </div>
+      
+      <!-- EMI Breakdown -->
+      <div class="emi-breakdown">
+        <h3 class="breakdown-title">EMI Breakdown</h3>
+        <div class="breakdown-grid">
+          <div class="breakdown-item">
+            <span class="breakdown-label">Principal</span>
+            <p class="breakdown-value">₹{{ calculationResults.loanAmount.toLocaleString() }}</p>
+          </div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">Interest</span>
+            <p class="breakdown-value">₹{{ calculationResults.totalInterest.toLocaleString() }}</p>
+          </div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">Fees</span>
+            <p class="breakdown-value">₹{{ calculationResults.processingFee.toLocaleString() }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Eligibility Status -->
+      <div class="eligibility-status" [class]="getEligibilityClass()">
+        <h3 class="status-title">{{ getEligibilityTitle() }}</h3>
+        <p class="status-description">{{ getEligibilityDescription() }}</p>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div class="results-card" *ngIf="!calculationResults && !isCalculating">
+      <h2 class="results-title">Ready to Calculate</h2>
+      <p class="results-subtitle">Fill in your loan details on the left and click "Calculate Loan" to see your personalized loan summary, including monthly EMI, total interest, and eligibility status.</p>
+      
+      <div style="text-align: center; padding: 40px 20px;">
+        <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;">🧮</div>
+        <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0 0 12px 0;">Enter Your Details</h3>
+        <p style="color: #64748b; font-size: 1.1rem; margin: 0; line-height: 1.6;">Start by entering your loan amount, interest rate, and tenure to get instant calculations.</p>
+      </div>
+    </div>
+  </div>
+</div>

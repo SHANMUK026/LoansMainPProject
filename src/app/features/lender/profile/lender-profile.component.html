@@ -1,0 +1,69 @@
+<div class="lender-profile">
+  <!-- Header -->
+  <header class="profile-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>👤 Lender Profile</h1>
+        <p class="header-subtitle">Update your lender profile information</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()" type="button">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Profile Card -->
+  <div class="profile-card">
+    <h2 class="profile-title">Profile Information</h2>
+    <p class="profile-subtitle">Keep your lender information up to date</p>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading profile...</p>
+    </div>
+    
+    <!-- Profile Form -->
+    <form *ngIf="!isLoading" [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+      <div class="form-group">
+        <label class="form-label">
+          <span class="required">*</span>
+          Display Name
+        </label>
+        <input 
+          type="text" 
+          class="form-control" 
+          formControlName="displayName"
+          placeholder="Enter your lender display name"
+          [class.error]="profileForm.get('displayName')?.invalid && profileForm.get('displayName')?.touched"
+        >
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn-update" [disabled]="profileForm.invalid || isSaving">
+          {{ isSaving ? 'Updating...' : 'Update Profile' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+    </form>
+    
+    <!-- Success Message -->
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+    
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<div class="admin-dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-icon">👑</div>
+        <div class="header-text">
+          <h1>Admin Dashboard</h1>
+          <p>Welcome back, {{ currentUser?.firstName }}! Manage your loan platform</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Actions -->
+  <section class="quick-actions">
+    <div class="section-header">
+      <h3>⚡ Quick Actions</h3>
+      <span class="section-subtitle">Common administrative tasks</span>
+    </div>
+    
+    <div class="action-cards">
+      <div class="action-card primary" (click)="viewAnalytics()">
+        <div class="action-icon">📊</div>
+        <h3>Analytics Dashboard</h3>
+        <p>Real-time insights & performance metrics</p>
+      </div>
+      
+      <div class="action-card secondary" (click)="manageUsers()">
+        <div class="action-icon">👥</div>
+        <h3>Manage Users</h3>
+        <p>View and manage all platform users</p>
+      </div>
+      
+      <div class="action-card success" (click)="manageLenders()">
+        <div class="action-icon">🏦</div>
+        <h3>Manage Lenders</h3>
+        <p>Oversee lender accounts and rules</p>
+      </div>
+      
+      <div class="action-card warning" (click)="reviewApplications()">
+        <div class="action-icon">📝</div>
+        <h3>Review Applications</h3>
+        <p>Monitor loan application status</p>
+      </div>
+      
+      <div class="action-card info" (click)="systemSettings()">
+        <div class="action-icon">⚙️</div>
+        <h3>System Settings</h3>
+        <p>Configure platform parameters</p>
+      </div>
+      
+      <div class="action-card tertiary" (click)="generateReports()">
+        <div class="action-icon">📈</div>
+        <h3>Generate Reports</h3>
+        <p>Create detailed platform reports</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- System Overview -->
+  <section class="system-overview">
+    <div class="section-header">
+      <h3>🔍 System Overview</h3>
+      <span class="section-subtitle">Platform statistics and health</span>
+    </div>
+    
+    <div class="overview-grid">
+      <div class="overview-card">
+        <div class="overview-icon">👥</div>
+        <div class="overview-content">
+          <h4>Total Users</h4>
+          <div class="overview-value">1,247</div>
+          <div class="overview-trend positive">+12% this month</div>
+        </div>
+      </div>
+      
+      <div class="overview-card">
+        <div class="overview-icon">🏦</div>
+        <div class="overview-content">
+          <h4>Active Lenders</h4>
+          <div class="overview-value">23</div>
+          <div class="overview-trend positive">+3 this month</div>
+        </div>
+      </div>
+      
+      <div class="overview-card">
+        <div class="overview-icon">📝</div>
+        <div class="overview-content">
+          <h4>Applications</h4>
+          <div class="overview-value">456</div>
+          <div class="overview-trend positive">+8% this month</div>
+        </div>
+      </div>
+      
+      <div class="overview-card">
+        <div class="overview-icon">💰</div>
+        <div class="overview-content">
+          <h4>Loan Volume</h4>
+          <div class="overview-value">₹2.4Cr</div>
+          <div class="overview-trend positive">+15% this month</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

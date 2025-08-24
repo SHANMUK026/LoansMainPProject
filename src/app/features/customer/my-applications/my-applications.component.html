@@ -1,0 +1,80 @@
+<header class="app-header">
+  <div class="container">
+    <h1 class="app-title">Loan Eligibility Checker</h1>
+    <div class="user-info">
+      <button class="btn btn--ghost" (click)="goBack()">← Back to Dashboard</button>
+      <button class="btn btn--danger" (click)="logout()">🚪 Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  <div class="container">
+    <div class="card">
+      <div class="card__header">
+        <h1 class="card__title">My Applications</h1>
+        <p class="card__subtitle">Track all your loan applications</p>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="card text-center">
+      <div class="spinner"></div>
+      <p class="mt-md">Loading applications...</p>
+    </div>
+
+    <div *ngIf="!isLoading && errorMessage" class="card">
+      <div class="form__error text-center">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage" class="card">
+      <div *ngIf="applications.length === 0" class="text-center">
+        <p class="mb-lg">You haven't submitted any loan applications yet.</p>
+        <a routerLink="/customer/apply-loan" class="btn btn--primary">Apply for Your First Loan</a>
+      </div>
+
+      <div *ngIf="applications.length > 0">
+        <table class="table">
+          <thead class="table__header">
+            <tr>
+              <th>ID</th>
+              <th>Amount</th>
+              <th>Purpose</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let app of applications" class="table__row">
+              <td class="table__cell">#{{ app.id }}</td>
+              <td class="table__cell">{{ formatCurrency(app.requestedAmount) }}</td>
+              <td class="table__cell">{{ app.loanPurpose || 'N/A' }}</td>
+              <td class="table__cell">
+                <span class="badge" [class]="getStatusBadgeClass(app.status)">
+                  {{ app.status }}
+                </span>
+              </td>
+              <td class="table__cell">{{ formatDate(app.createdAt) }}</td>
+              <td class="table__cell table__cell--actions">
+                <button 
+                  (click)="viewEligibility(app.id)"
+                  class="btn btn--primary"
+                  style="padding: var(--spacing-sm) var(--spacing-md); font-size: 0.875rem;"
+                >
+                  View Results
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form__actions mt-lg">
+          <a routerLink="/customer/apply-loan" class="btn btn--primary">Apply for New Loan</a>
+          <a routerLink="/dashboard" class="btn btn--ghost">Back to Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

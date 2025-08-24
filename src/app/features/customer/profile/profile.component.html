@@ -1,0 +1,104 @@
+<div class="customer-profile">
+  <!-- Header -->
+  <header class="profile-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>👤 My Profile</h1>
+        <p class="header-subtitle">Update your personal and financial information</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Profile Card -->
+  <div class="profile-card">
+    <h2 class="profile-title">Profile Information</h2>
+    <p class="profile-subtitle">Keep your information up to date for better loan eligibility</p>
+    
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+      <div class="form-group">
+        <label class="form-label">
+          <span class="required">*</span>
+          Full Name
+        </label>
+        <input 
+          type="text" 
+          class="form-control" 
+          formControlName="fullName"
+          placeholder="Enter your full name"
+          [class.error]="profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <span class="required">*</span>
+          Age
+        </label>
+        <input 
+          type="number" 
+          class="form-control" 
+          formControlName="age"
+          placeholder="Enter your age"
+          [class.error]="profileForm.get('age')?.invalid && profileForm.get('age')?.touched"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <span class="required">*</span>
+          Annual Salary (₹)
+        </label>
+        <input 
+          type="number" 
+          class="form-control" 
+          formControlName="salary"
+          placeholder="Enter your annual salary"
+          [class.error]="profileForm.get('salary')?.invalid && profileForm.get('salary')?.touched"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <span class="required">*</span>
+          Credit Score
+        </label>
+        <input 
+          type="number" 
+          class="form-control" 
+          formControlName="creditScore"
+          placeholder="Enter your credit score (300-850)"
+          [class.error]="profileForm.get('creditScore')?.invalid && profileForm.get('creditScore')?.touched"
+        >
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn-update" [disabled]="profileForm.invalid || isSaving">
+          {{ isSaving ? 'Updating...' : 'Update Profile' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+    </form>
+    
+    <!-- Success Message -->
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+    
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>

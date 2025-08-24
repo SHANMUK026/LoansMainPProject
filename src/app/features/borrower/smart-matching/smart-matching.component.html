@@ -1,0 +1,182 @@
+<div class="smart-matching-container">
+  <!-- Header -->
+  <header class="matching-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-icon">🎯</div>
+        <div class="header-text">
+          <h1>Smart Loan Matching</h1>
+          <p>Find your perfect lender match with AI-powered recommendations</p>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-number">{{ lenderMatches.length }}</span>
+          <span class="stat-label">Lenders Found</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ getEligibleCount() }}</span>
+          <span class="stat-label">Eligible</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filters Section -->
+  <section class="filters-section">
+    <div class="filters-header">
+      <h3>🔍 Refine Your Search</h3>
+      <button class="reset-btn" (click)="resetFilters()">Reset Filters</button>
+    </div>
+    
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Minimum Match Score</label>
+        <div class="range-slider">
+          <input 
+            type="range" 
+            min="50" 
+            max="100" 
+            [(ngModel)]="selectedFilters.minMatchScore"
+            class="slider"
+          >
+          <span class="range-value">{{ selectedFilters.minMatchScore }}%</span>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <label>Max Interest Rate</label>
+        <div class="range-slider">
+          <input 
+            type="range" 
+            min="5" 
+            max="25" 
+            [(ngModel)]="selectedFilters.maxInterestRate"
+            class="slider"
+          >
+          <span class="range-value">{{ selectedFilters.maxInterestRate }}%</span>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <label>Max Processing Fee</label>
+        <div class="range-slider">
+          <input 
+            type="range" 
+            min="100" 
+            max="2000" 
+            [(ngModel)]="selectedFilters.maxProcessingFee"
+            class="slider"
+          >
+          <span class="range-value">${{ selectedFilters.maxProcessingFee }}</span>
+        </div>
+      </div>
+      
+      <button class="apply-filters-btn" (click)="applyFilters()">
+        Apply Filters
+      </button>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Finding your perfect lender matches...</p>
+  </div>
+
+  <!-- Lender Matches -->
+  <section *ngIf="!isLoading && lenderMatches.length > 0" class="matches-section">
+    <div class="matches-header">
+      <h3>🏆 Your Best Lender Matches</h3>
+      <p>Sorted by match score - highest first</p>
+    </div>
+    
+    <div class="matches-grid">
+      <div 
+        *ngFor="let match of lenderMatches" 
+        class="match-card"
+        [ngClass]="getEligibilityClass(match.eligibilityStatus)"
+      >
+        <!-- Match Score Badge -->
+        <div class="match-score-badge" [ngClass]="getMatchScoreClass(match.matchScore)">
+          <span class="score-number">{{ match.matchScore }}%</span>
+          <span class="score-label">Match</span>
+        </div>
+        
+        <!-- Lender Info -->
+        <div class="lender-info">
+          <div class="lender-header">
+            <h4>{{ match.lender.companyName }}</h4>
+            <span class="eligibility-status" [ngClass]="getEligibilityClass(match.eligibilityStatus)">
+              {{ match.eligibilityStatus.replace('_', ' ') }}
+            </span>
+          </div>
+          
+          <div class="lender-details">
+            <div class="detail-row">
+              <span class="label">Interest Rate:</span>
+              <span class="value rate">{{ match.interestRate }}%</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Processing Fee:</span>
+              <span class="value">${{ match.processingFee }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Max Loan:</span>
+              <span class="value">${{ match.maxLoanAmount.toLocaleString() }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Match Reasons -->
+        <div class="match-reasons">
+          <h5>Why This Match?</h5>
+          <ul class="reasons-list">
+            <li *ngFor="let reason of match.matchReasons.slice(0, 3)" [innerHTML]="reason"></li>
+          </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="match-actions">
+          <button 
+            *ngIf="match.eligibilityStatus === 'ELIGIBLE'"
+            class="apply-btn primary" 
+            (click)="applyToLender(match.lender)"
+          >
+            🚀 Apply Now
+          </button>
+          <button 
+            *ngIf="match.eligibilityStatus !== 'ELIGIBLE'"
+            class="apply-btn secondary" 
+            (click)="applyToLender(match.lender)"
+          >
+            📝 Apply Anyway
+          </button>
+          <button class="details-btn" (click)="viewLenderDetails(match.lender)">
+            👁️ View Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- No Matches State -->
+  <section *ngIf="!isLoading && lenderMatches.length === 0" class="no-matches">
+    <div class="no-matches-content">
+      <div class="no-matches-icon">🔍</div>
+      <h3>No Lender Matches Found</h3>
+      <p>Try adjusting your filters or improving your profile to find better matches.</p>
+      <button class="reset-btn" (click)="resetFilters()">Reset Filters</button>
+    </div>
+  </section>
+</div>

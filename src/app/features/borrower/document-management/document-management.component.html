@@ -1,0 +1,196 @@
+<div class="document-management-container">
+  <!-- Header -->
+  <header class="management-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-icon">📁</div>
+        <div class="header-text">
+          <h1>Document Management</h1>
+          <p>Upload and manage your loan application documents</p>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-number">{{ getCompletionPercentage() }}%</span>
+          <span class="stat-label">Complete</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ documents.length }}</span>
+          <span class="stat-label">Documents</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="back-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <section class="progress-section">
+    <div class="progress-header">
+      <h3>📊 Document Completion Progress</h3>
+      <span class="progress-percentage">{{ getCompletionPercentage() }}%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="getCompletionPercentage()"></div>
+    </div>
+    <div class="progress-info">
+      <span class="progress-text">{{ getCompletionPercentage() }}% Complete</span>
+      <span class="progress-details">{{ getMissingDocumentsCount() }} of {{ getRequiredDocumentsCount() }} required</span>
+    </div>
+  </section>
+
+  <!-- Upload Section -->
+  <section class="upload-section">
+    <div class="upload-header">
+      <h3>📤 Upload New Document</h3>
+      <button class="toggle-btn" (click)="toggleUploadForm()">
+        {{ showUploadForm ? 'Cancel' : 'Upload Document' }}
+      </button>
+    </div>
+    
+    <div class="upload-form" *ngIf="showUploadForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="documentType">Document Type</label>
+          <select id="documentType" [(ngModel)]="selectedDocumentType" class="form-input">
+            <option *ngFor="let docType of documentTypes" [value]="docType.value">
+              {{ docType.icon }} {{ docType.label }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="applicationId">Associate with Application</label>
+          <select id="applicationId" [(ngModel)]="selectedApplicationId" class="form-input">
+            <option [value]="undefined">Not Assigned</option>
+            <option *ngFor="let app of loanApplications" [value]="app.id">
+              Application #{{ app.id }}
+            </option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="file-upload-area" 
+           [class.drag-over]="dragOver"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)">
+        <div class="upload-content">
+          <div class="upload-icon">📁</div>
+          <h4>Drag & Drop your file here</h4>
+          <p>or</p>
+          <label for="fileInput" class="file-input-label">
+            <input id="fileInput"
+                   type="file" 
+                   (change)="onFileSelected($event)" 
+                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                   class="file-input">
+            Choose File
+          </label>
+          <p class="file-types">Supported: PDF, JPG, PNG, DOC, DOCX (Max 10MB)</p>
+        </div>
+        
+        <div *ngIf="selectedFile" class="selected-file">
+          <div class="file-info">
+            <span class="file-name">{{ selectedFile.name }}</span>
+            <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+          </div>
+          <button class="upload-btn" (click)="uploadDocument()" [disabled]="isLoading">
+            <span *ngIf="!isLoading">🚀 Upload Document</span>
+            <span *ngIf="isLoading" class="loading-spinner">Uploading...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Missing Documents -->
+  <section class="missing-docs-section" *ngIf="getMissingDocuments().length > 0">
+    <div class="section-header">
+      <h3>⚠️ Missing Required Documents</h3>
+      <p>Please upload these documents to complete your application</p>
+    </div>
+    
+    <div class="missing-docs-grid">
+      <div *ngFor="let docType of getMissingDocuments()" class="missing-doc-card">
+        <div class="doc-icon">{{ getDocumentIcon(docType) }}</div>
+        <div class="doc-info">
+          <h4>{{ getDocumentTypeLabel(docType) }}</h4>
+          <p>Required for loan processing</p>
+        </div>
+        <button class="upload-now-btn" (click)="toggleUploadForm()">
+          Upload Now
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documents List -->
+  <section class="documents-section">
+    <div class="section-header">
+      <h3>📋 Your Documents</h3>
+      <p>Manage and track your uploaded documents</p>
+    </div>
+    
+    <div class="documents-grid" *ngIf="!isLoading && documents.length > 0">
+      <div *ngFor="let doc of documents" class="document-card">
+        <div class="doc-header">
+          <div class="doc-icon">{{ getDocumentIcon(doc.type) }}</div>
+          <div class="doc-info">
+            <h4>{{ doc.name }}</h4>
+            <p class="doc-type">{{ getDocumentTypeLabel(doc.type) }}</p>
+          </div>
+          <div class="doc-status" [ngClass]="getStatusClass(doc.status)">
+            {{ getStatusIcon(doc.status) }} {{ doc.status }}
+          </div>
+        </div>
+        
+        <div class="doc-details">
+          <div class="detail-row">
+            <span class="label">Size:</span>
+            <span class="value">{{ formatFileSize(doc.size) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Uploaded:</span>
+            <span class="value">{{ doc.uploadedAt | date:'MMM dd, yyyy HH:mm' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Application:</span>
+            <span class="value">{{ getApplicationName(doc.applicationId) }}</span>
+          </div>
+        </div>
+        
+        <div class="doc-actions">
+          <button class="action-btn download" (click)="downloadDocument(doc)">
+            📥 Download
+          </button>
+          <button class="action-btn delete" (click)="deleteDocument(doc.id!)">
+            🗑️ Delete
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="!isLoading && documents.length === 0" class="empty-state">
+      <div class="empty-icon">📁</div>
+      <h3>No Documents Uploaded</h3>
+      <p>Start by uploading your first document to begin your loan application.</p>
+      <button class="upload-btn primary" (click)="toggleUploadForm()">
+        Upload Document
+      </button>
+    </div>
+    
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading your documents...</p>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,257 @@
+<div class="analytics-dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-icon">📊</div>
+        <div class="header-text">
+          <h1>Real-time Analytics Dashboard</h1>
+          <p>Comprehensive insights into loan applications and system performance</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="last-updated">
+          <span class="update-label">Last Updated:</span>
+          <span class="update-time">{{ lastUpdated | date:'short' }}</span>
+        </div>
+        <button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+          <span class="refresh-icon">🔄</span>
+          Refresh
+        </button>
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading analytics data...</p>
+  </div>
+
+  <!-- Analytics Content -->
+  <div *ngIf="!isLoading && analyticsData" class="analytics-content">
+    <!-- Key Metrics -->
+    <section class="metrics-section">
+      <div class="metrics-grid">
+        <div class="metric-card primary">
+          <div class="metric-icon">👥</div>
+          <div class="metric-content">
+            <h3>Total Users</h3>
+            <div class="metric-value">{{ formatNumber(analyticsData.totalUsers) }}</div>
+            <div class="metric-label">Borrowers</div>
+          </div>
+        </div>
+
+        <div class="metric-card secondary">
+          <div class="metric-icon">🏦</div>
+          <div class="metric-content">
+            <h3>Total Lenders</h3>
+            <div class="metric-value">{{ formatNumber(analyticsData.totalLenders) }}</div>
+            <div class="metric-label">Active Partners</div>
+          </div>
+        </div>
+
+        <div class="metric-card success">
+          <div class="metric-icon">📝</div>
+          <div class="metric-content">
+            <h3>Applications</h3>
+            <div class="metric-value">{{ formatNumber(analyticsData.totalApplications) }}</div>
+            <div class="metric-label">Total Submitted</div>
+          </div>
+        </div>
+
+        <div class="metric-card warning">
+          <div class="metric-icon">💰</div>
+          <div class="metric-content">
+            <h3>Loan Volume</h3>
+            <div class="metric-value">{{ formatCurrency(analyticsData.totalLoanAmount) }}</div>
+            <div class="metric-label">Total Amount</div>
+          </div>
+        </div>
+
+        <div class="metric-card info">
+          <div class="metric-icon">✅</div>
+          <div class="metric-content">
+            <h3>Approval Rate</h3>
+            <div class="metric-value">{{ analyticsData.approvalRate }}%</div>
+            <div class="metric-label">Success Rate</div>
+          </div>
+        </div>
+
+        <div class="metric-card tertiary">
+          <div class="metric-icon">⏱️</div>
+          <div class="metric-content">
+            <h3>Avg. Processing</h3>
+            <div class="metric-value">{{ analyticsData.averageProcessingTime }}d</div>
+            <div class="metric-label">Days</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <div class="charts-grid">
+        <!-- Monthly Applications Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>📈 Monthly Applications Trend</h3>
+            <span class="chart-subtitle">Last 6 months</span>
+          </div>
+          <div class="chart-content">
+            <div class="bar-chart">
+              <div class="chart-bars">
+                <div 
+                  *ngFor="let month of analyticsData.monthlyApplications" 
+                  class="chart-bar"
+                  [style.height.px]="getBarHeight(month.count)"
+                >
+                  <div class="bar-value">{{ month.count }}</div>
+                  <div class="bar-label">{{ month.month }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-color applications"></span>
+                <span>Applications</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Application Status Distribution -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>📊 Application Status Distribution</h3>
+            <span class="chart-subtitle">Current breakdown</span>
+          </div>
+          <div class="chart-content">
+            <div class="pie-chart">
+              <div class="status-items">
+                <div 
+                  *ngFor="let status of analyticsData.applicationStatuses" 
+                  class="status-item"
+                >
+                  <div class="status-info">
+                    <span class="status-icon">{{ getStatusIcon(status.status) }}</span>
+                    <span class="status-name">{{ status.status.replace('_', ' ') }}</span>
+                  </div>
+                  <div class="status-stats">
+                    <span class="status-count">{{ status.count }}</span>
+                    <span class="status-percentage">{{ status.percentage }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Lenders Section -->
+    <section class="top-lenders-section">
+      <div class="section-header">
+        <h3>🏆 Top Performing Lenders</h3>
+        <span class="section-subtitle">By application volume and approval rate</span>
+      </div>
+      
+      <div class="lenders-grid">
+        <div 
+          *ngFor="let lenderData of analyticsData.topLenders; let i = index" 
+          class="lender-card"
+        >
+          <div class="lender-rank">
+            <span class="rank-number">#{{ i + 1 }}</span>
+          </div>
+          <div class="lender-info">
+            <div class="lender-name">{{ lenderData.lender.companyName }}</div>
+            <div class="lender-details">
+              <span class="lender-type">{{ lenderData.lender.specializations[0] || 'General' }}</span>
+              <span class="lender-location">{{ lenderData.lender.companyName }}</span>
+            </div>
+          </div>
+          <div class="lender-stats">
+            <div class="stat-item">
+              <span class="stat-label">Applications</span>
+              <span class="stat-value">{{ lenderData.applications }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Approval Rate</span>
+              <span class="stat-value">{{ lenderData.approvalRate }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loan Amount Distribution -->
+    <section class="loan-distribution-section">
+      <div class="section-header">
+        <h3>💰 Loan Amount Distribution</h3>
+        <span class="section-subtitle">Application volume by loan amount ranges</span>
+      </div>
+      
+      <div class="distribution-grid">
+        <div 
+          *ngFor="let range of analyticsData.loanAmountRanges" 
+          class="distribution-card"
+        >
+          <div class="range-info">
+            <div class="range-label">{{ range.range }}</div>
+            <div class="range-count">{{ range.count }} applications</div>
+          </div>
+          <div class="range-bar">
+            <div 
+              class="range-fill" 
+              [style.width.%]="range.percentage"
+            ></div>
+          </div>
+          <div class="range-percentage">{{ range.percentage }}%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions-section">
+      <div class="section-header">
+        <h3>⚡ Quick Actions</h3>
+        <span class="section-subtitle">Common administrative tasks</span>
+      </div>
+      
+      <div class="actions-grid">
+        <button class="action-btn primary">
+          <span class="action-icon">👥</span>
+          <span class="action-text">Manage Users</span>
+        </button>
+        <button class="action-btn secondary">
+          <span class="action-icon">🏦</span>
+          <span class="action-text">Manage Lenders</span>
+        </button>
+        <button class="action-btn success">
+          <span class="action-icon">📝</span>
+          <span class="action-text">Review Applications</span>
+        </button>
+        <button class="action-btn warning">
+          <span class="action-icon">📊</span>
+          <span class="action-text">Generate Reports</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- No Data State -->
+  <div *ngIf="!isLoading && !analyticsData" class="no-data">
+    <div class="no-data-icon">📊</div>
+    <h3>No Analytics Data Available</h3>
+    <p>Start by adding some users, lenders, and loan applications to see analytics.</p>
+  </div>
+</div>

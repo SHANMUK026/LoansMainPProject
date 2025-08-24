@@ -1,0 +1,160 @@
+<div class="analytics-dashboard">
+  <!-- Header -->
+  <header class="analytics-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>📊 Analytics Dashboard</h1>
+        <p class="header-subtitle">Comprehensive insights into your lending performance</p>
+      </div>
+      <div class="header-actions">
+        <button class="export-btn" (click)="exportAnalytics()">
+          <span class="btn-icon">📊</span>
+          Export Report
+        </button>
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading analytics data...</p>
+  </div>
+
+  <!-- Analytics Content -->
+  <div *ngIf="!isLoading" class="analytics-content">
+    <!-- Key Metrics -->
+    <div class="metrics-section">
+      <div class="metric-card primary">
+        <div class="metric-icon">📈</div>
+        <div class="metric-content">
+          <h3>{{ totalApplications }}</h3>
+          <p>Total Applications</p>
+        </div>
+      </div>
+      
+      <div class="metric-card success">
+        <div class="metric-icon">✅</div>
+        <div class="metric-content">
+          <h3>{{ approvedApplications }}</h3>
+          <p>Approved Loans</p>
+        </div>
+      </div>
+      
+      <div class="metric-card warning">
+        <div class="metric-icon">⏳</div>
+        <div class="metric-content">
+          <h3>{{ pendingApplications }}</h3>
+          <p>Pending Review</p>
+        </div>
+      </div>
+      
+      <div class="metric-card danger">
+        <div class="metric-icon">❌</div>
+        <div class="metric-content">
+          <h3>{{ rejectedApplications }}</h3>
+          <p>Rejected Loans</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Metrics -->
+    <div class="financial-metrics">
+      <div class="metric-card large">
+        <div class="metric-icon">💰</div>
+        <div class="metric-content">
+          <h3>₹{{ totalLoanAmount.toLocaleString() }}</h3>
+          <p>Total Loan Amount</p>
+        </div>
+      </div>
+      
+      <div class="metric-card large">
+        <div class="metric-icon">📊</div>
+        <div class="metric-content">
+          <h3>₹{{ averageLoanAmount.toLocaleString() }}</h3>
+          <p>Average Loan Amount</p>
+        </div>
+      </div>
+      
+      <div class="metric-card large">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-content">
+          <h3>{{ approvalRate.toFixed(1) }}%</h3>
+          <p>Approval Rate</p>
+        </div>
+      </div>
+      
+      <div class="metric-card large">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-content">
+          <h3>{{ averageProcessingTime }}</h3>
+          <p>Avg. Processing (Days)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <!-- Monthly Trend -->
+      <div class="chart-card">
+        <h3>📅 Monthly Application Trend</h3>
+        <div class="chart-container">
+          <div class="monthly-bar" *ngFor="let month of monthlyApplications">
+            <div class="bar-label">{{ month.month }}</div>
+            <div class="bar-container">
+              <div class="bar approved" [style.height.%]="(month.approved / 30) * 100"></div>
+              <div class="bar pending" [style.height.%]="(month.pending / 30) * 100"></div>
+              <div class="bar rejected" [style.height.%]="(month.rejected / 30) * 100"></div>
+            </div>
+            <div class="bar-total">{{ month.applications }}</div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-color approved"></span> Approved</span>
+          <span class="legend-item"><span class="legend-color pending"></span> Pending</span>
+          <span class="legend-item"><span class="legend-color rejected"></span> Rejected</span>
+        </div>
+      </div>
+
+      <!-- Loan Amount Distribution -->
+      <div class="chart-card">
+        <h3>💰 Loan Amount Distribution</h3>
+        <div class="pie-chart-container">
+          <div class="pie-segment" *ngFor="let segment of loanAmountDistribution; let i = index"
+               [style.transform]="'rotate(' + (i * 90) + 'deg)'"
+               [style.background]="getSegmentColor(i)">
+            <div class="segment-label">{{ segment.range }}</div>
+            <div class="segment-value">{{ segment.count }} ({{ segment.percentage }}%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Statistics -->
+    <div class="stats-section">
+      <div class="stat-card">
+        <h3>🎓 Employment Type Statistics</h3>
+        <div class="stat-list">
+          <div class="stat-item" *ngFor="let stat of employmentTypeStats">
+            <span class="stat-label">{{ stat.type }}</span>
+            <span class="stat-value">{{ stat.count }} ({{ stat.percentage }}%)</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <h3>📊 Credit Score Distribution</h3>
+        <div class="stat-list">
+          <div class="stat-item" *ngFor="let stat of creditScoreDistribution">
+            <span class="stat-label">{{ stat.range }}</span>
+            <span class="stat-value">{{ stat.count }} ({{ stat.percentage }}%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,165 @@
+<div class="admin-reports-container">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="app-title">📈 Reports & Analytics</h1>
+        <div class="user-info">
+          <button class="btn btn--ghost" (click)="goBack()">
+            <span>←</span>
+            Back to Dashboard
+          </button>
+          <button class="btn btn--danger" (click)="logout()">
+            <span>🚪</span>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Reports Overview Card -->
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">Generate Reports</h2>
+          <p class="card__subtitle">Create comprehensive reports for platform analysis and decision making</p>
+        </div>
+
+        <!-- Report Generation Form -->
+        <div class="report-form">
+          <!-- Report Selection -->
+          <div class="form-section">
+            <h3 class="section-title">📋 Select Report Type</h3>
+            <div class="reports-grid">
+              <div 
+                *ngFor="let report of availableReports" 
+                class="report-card"
+                [class.selected]="selectedReport === report.id"
+                (click)="selectReport(report.id)"
+              >
+                <div class="report-icon">{{ report.icon }}</div>
+                <div class="report-content">
+                  <h4 class="report-name">{{ report.name }}</h4>
+                  <p class="report-description">{{ report.description }}</p>
+                  <span class="report-category">{{ report.category }}</span>
+                </div>
+                <div class="report-actions">
+                  <button class="btn btn--ghost btn--small" (click)="downloadReport(report.id); $event.stopPropagation()">
+                    <span>⬇️</span>
+                    Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date Range Selection -->
+          <div class="form-section">
+            <h3 class="section-title">📅 Date Range</h3>
+            <div class="date-selection">
+              <label for="dateRange" class="form-label">Select the time period for your report:</label>
+              <select id="dateRange" class="form-select" [(ngModel)]="reportDateRange">
+                <option value="current-month">Current Month</option>
+                <option value="last-month">Last Month</option>
+                <option value="current-quarter">Current Quarter</option>
+                <option value="last-quarter">Last Quarter</option>
+                <option value="current-year">Current Year</option>
+                <option value="last-year">Last Year</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Generate Button -->
+          <div class="form__actions">
+            <button 
+              class="btn btn--primary" 
+              (click)="generateReport()"
+              [disabled]="!selectedReport || isGenerating"
+            >
+              <span *ngIf="!isGenerating">📊</span>
+              <span *ngIf="isGenerating" class="spinner-small"></span>
+              {{ isGenerating ? 'Generating Report...' : 'Generate Report' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Reports Card -->
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">Recent Reports</h2>
+          <p class="card__subtitle">Quick access to recently generated reports</p>
+        </div>
+
+        <div class="recent-reports">
+          <div class="recent-report-item">
+            <div class="report-info">
+              <div class="report-icon">📊</div>
+              <div class="report-details">
+                <h4>Monthly Summary Report</h4>
+                <p>Generated on December 1, 2024</p>
+                <span class="report-size">2.4 MB</span>
+              </div>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn--ghost btn--small">
+                <span>👁️</span>
+                View
+              </button>
+              <button class="btn btn--ghost btn--small">
+                <span>⬇️</span>
+                Download
+              </button>
+            </div>
+          </div>
+
+          <div class="recent-report-item">
+            <div class="report-info">
+              <div class="report-icon">👥</div>
+              <div class="report-details">
+                <h4>User Activity Report</h4>
+                <p>Generated on November 28, 2024</p>
+                <span class="report-size">1.8 MB</span>
+              </div>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn--ghost btn--small">
+                <span>👁️</span>
+                View
+              </button>
+              <button class="btn btn--ghost btn--small">
+                <span>⬇️</span>
+                Download
+              </button>
+            </div>
+          </div>
+
+          <div class="recent-report-item">
+            <div class="report-info">
+              <div class="report-icon">💰</div>
+              <div class="report-details">
+                <h4>Loan Performance Report</h4>
+                <p>Generated on November 25, 2024</p>
+                <span class="report-size">3.1 MB</span>
+              </div>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn--ghost btn--small">
+                <span>👁️</span>
+                View
+              </button>
+              <button class="btn btn--ghost btn--small">
+                <span>⬇️</span>
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

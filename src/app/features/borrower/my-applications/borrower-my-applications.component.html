@@ -1,0 +1,295 @@
+<div class="borrower-my-applications">
+  <!-- Header -->
+  <header class="applications-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>📋 My Loan Applications</h1>
+        <p class="header-subtitle">Track and manage all your loan applications</p>
+      </div>
+      <div class="header-actions">
+        <button class="new-application-btn" (click)="applyForNewLoan()">
+          <span class="btn-icon">📝</span>
+          New Application
+        </button>
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" type="button" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Application Statistics -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicationStats().total }}</span>
+          <span class="stat-label">Total Applications</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicationStats().approved }}</span>
+          <span class="stat-label">Approved</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicationStats().pending }}</span>
+          <span class="stat-label">Pending</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">❌</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicationStats().rejected }}</span>
+          <span class="stat-label">Rejected</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ formatCurrency(getTotalApprovedAmount()) }}</span>
+          <span class="stat-label">Total Approved</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ getAverageEligibilityScore().toFixed(0) }}</span>
+          <span class="stat-label">Avg Score</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applications List -->
+  <div class="applications-content">
+    <div class="applications-header-section">
+      <h3>Application History</h3>
+      <p>Review the status and details of all your loan applications</p>
+    </div>
+    
+    <div class="applications-list" *ngIf="!isLoading && applications.length > 0">
+      <div 
+        *ngFor="let application of applications" 
+        class="application-card"
+        (click)="viewApplicationDetails(application)"
+      >
+        <div class="application-header">
+          <div class="app-id">
+            <span class="id-label">Application #{{ application.id }}</span>
+            <span class="app-date">{{ application.appliedDate ? formatDate(application.appliedDate) : 'N/A' }}</span>
+          </div>
+          <div class="app-status">
+            <span class="status-badge" [class]="getStatusBadgeClass(application.status)">
+              {{ getStatusIcon(application.status) }} {{ application.status }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="application-details">
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="detail-label">Loan Amount:</span>
+              <span class="detail-value amount">{{ formatCurrency(application.loanAmount) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Purpose:</span>
+              <span class="detail-value">{{ application.loanPurpose }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="detail-label">Lender:</span>
+              <span class="detail-value">{{ getLenderName(application.lenderId) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Term:</span>
+              <span class="detail-value">{{ application.loanTerm }} years</span>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="detail-label">Eligibility Score:</span>
+              <span class="detail-value score" [class]="getEligibilityClass(application.eligibilityScore || 0)">
+                {{ application.eligibilityScore || 0 }}%
+              </span>
+            </div>
+            <div class="detail-item" *ngIf="(application.monthlyEMI || 0) > 0">
+              <span class="detail-label">Monthly EMI:</span>
+              <span class="detail-value">{{ formatCurrency(application.monthlyEMI || 0) }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="application-footer">
+          <button class="view-details-btn">
+            👁️ View Details
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && applications.length === 0">
+      <div class="empty-icon">📋</div>
+      <h3>No Applications Yet</h3>
+      <p>Start your journey by applying for your first loan!</p>
+      <button class="btn-primary" (click)="applyForNewLoan()">
+        Apply for Loan
+      </button>
+    </div>
+    
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading your applications...</p>
+    </div>
+    
+    <!-- Error State -->
+    <div class="error-state" *ngIf="errorMessage">
+      <div class="error-icon">❌</div>
+      <h3>Error Loading Applications</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="btn-secondary" (click)="loadApplications()">
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Application Details Modal -->
+  <div class="modal-overlay" *ngIf="showApplicationDetails" (click)="closeApplicationDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Application Details</h3>
+        <button class="close-btn" (click)="closeApplicationDetails()">×</button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedApplication">
+        <div class="detail-section">
+          <h4>Basic Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Application ID:</span>
+              <span class="value">#{{ selectedApplication.id }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Status:</span>
+              <span class="value status" [class]="getStatusBadgeClass(selectedApplication.status)">
+                {{ getStatusIcon(selectedApplication.status) }} {{ selectedApplication.status }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Applied Date:</span>
+              <span class="value">{{ selectedApplication.appliedDate ? formatDate(selectedApplication.appliedDate) : 'N/A' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Last Updated:</span>
+              <span class="value">{{ formatUpdatedDate(selectedApplication.updatedAt) }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>Loan Details</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Loan Amount:</span>
+              <span class="value amount">{{ formatCurrency(selectedApplication.loanAmount) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Loan Purpose:</span>
+              <span class="value">{{ selectedApplication.loanPurpose }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Loan Term:</span>
+              <span class="value">{{ selectedApplication.loanTerm }} years</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Lender:</span>
+              <span class="value">{{ getLenderName(selectedApplication.lenderId) }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>Assessment Details</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Eligibility Score:</span>
+              <span class="value score" [class]="getEligibilityClass(selectedApplication.eligibilityScore || 0)">
+                {{ selectedApplication.eligibilityScore || 0 }}%
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Monthly Income:</span>
+              <span class="value">{{ formatCurrency(selectedApplication.monthlyIncome || 0) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Credit Score:</span>
+              <span class="value">{{ selectedApplication.creditScore }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Employment Status:</span>
+              <span class="value">{{ selectedApplication.employmentStatus }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section" *ngIf="(selectedApplication.monthlyEMI || 0) > 0">
+          <h4>Payment Details</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Monthly EMI:</span>
+              <span class="value amount">{{ formatCurrency(selectedApplication.monthlyEMI || 0) }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section" *ngIf="selectedApplication.comments">
+          <h4>Comments</h4>
+          <p class="comments">{{ selectedApplication.comments }}</p>
+        </div>
+        
+        <div class="detail-section" *ngIf="selectedApplication.decisionDate">
+          <h4>Decision Information</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Decision Date:</span>
+              <span class="value">{{ formatDecisionDate(selectedApplication.decisionDate) }}</span>
+            </div>
+            <div class="detail-item" *ngIf="selectedApplication.decisionBy">
+              <span class="label">Decision By:</span>
+              <span class="value">{{ selectedApplication.decisionBy }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeApplicationDetails()">
+          Close
+        </button>
+        <button class="btn-primary" (click)="applyForNewLoan()">
+          Apply for New Loan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

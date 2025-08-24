@@ -1,0 +1,235 @@
+<div class="borrower-apply-loan">
+  <!-- Header -->
+  <header class="apply-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>📝 Apply for Loan</h1>
+        <p class="header-subtitle">Submit your loan application and get instant eligibility assessment</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" type="button" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Eligibility Check Section -->
+  <div class="eligibility-section" *ngIf="showEligibilityCheck">
+    <div class="eligibility-card">
+      <div class="eligibility-header">
+        <h3>🎯 Your Eligibility Assessment</h3>
+        <p>Based on your profile information</p>
+      </div>
+      
+      <div class="eligibility-score">
+        <div class="score-circle" [class]="getEligibilityClass()">
+          <span class="score-number">{{ eligibilityScore }}</span>
+          <span class="score-label">Score</span>
+        </div>
+        <div class="score-details">
+          <h4 [class]="getEligibilityClass()">{{ getEligibilityMessage() }}</h4>
+          <p class="score-description">
+            Your eligibility score is calculated based on credit score, income, employment status, and age.
+          </p>
+        </div>
+      </div>
+      
+      <div class="eligibility-actions">
+        <button class="btn-primary" (click)="showEligibilityCheck = false">
+          Continue with Application
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Form -->
+  <div class="application-content">
+    <!-- Application Form Card -->
+    <div class="application-form-card">
+      <div class="form-header">
+        <h3>Loan Application Details</h3>
+        <p>Fill in the required information to submit your application</p>
+      </div>
+      
+      <form [formGroup]="loanForm" (ngSubmit)="onSubmit()" class="application-form">
+        <!-- Basic Loan Information -->
+        <div class="form-section">
+          <h4>Basic Loan Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="requestedAmount" class="form-label">Loan Amount (₹)</label>
+              <input
+                id="requestedAmount"
+                type="number"
+                formControlName="requestedAmount"
+                class="form-input"
+                placeholder="Enter loan amount"
+                min="1000"
+                max="1000000"
+              />
+              <div class="error-message" *ngIf="requestedAmount?.invalid && requestedAmount?.touched">
+                <span *ngIf="requestedAmount?.errors?.['required']">Loan amount is required</span>
+                <span *ngIf="requestedAmount?.errors?.['min']">Minimum amount is ₹1,000</span>
+                <span *ngIf="requestedAmount?.errors?.['max']">Maximum amount is ₹10,00,000</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="purpose" class="form-label">Loan Purpose</label>
+              <textarea
+                id="purpose"
+                formControlName="purpose"
+                class="form-input"
+                placeholder="Describe the purpose of your loan"
+                rows="3"
+              ></textarea>
+              <div class="error-message" *ngIf="purpose?.invalid && purpose?.touched">
+                <span *ngIf="purpose?.errors?.['required']">Loan purpose is required</span>
+                <span *ngIf="purpose?.errors?.['minlength']">Minimum 10 characters required</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="loanTerm" class="form-label">Loan Term (Years)</label>
+              <input
+                id="loanTerm"
+                type="number"
+                formControlName="loanTerm"
+                class="form-input"
+                placeholder="Enter loan term in years"
+                min="1"
+                max="30"
+              />
+              <div class="error-message" *ngIf="loanTerm?.invalid && loanTerm?.touched">
+                <span *ngIf="loanTerm?.errors?.['required']">Loan term is required</span>
+                <span *ngIf="loanTerm?.errors?.['min']">Minimum term is 1 year</span>
+                <span *ngIf="loanTerm?.errors?.['max']">Maximum term is 30 years</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="preferredLender" class="form-label">Preferred Lender</label>
+              <select id="preferredLender" class="form-input" formControlName="preferredLender">
+                <option value="">Select preferred lender (optional)</option>
+                <option *ngFor="let lender of availableLenders" [value]="lender.id">
+                  {{ lender.name }} - {{ lender.interestRate }} interest
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Collateral Information -->
+        <div class="form-section">
+          <h4>Collateral Information (Optional)</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="collateralType" class="form-label">Collateral Type</label>
+              <select id="collateralType" class="form-input" formControlName="collateralType">
+                <option value="">Select collateral type</option>
+                <option value="PROPERTY">Property</option>
+                <option value="VEHICLE">Vehicle</option>
+                <option value="INVESTMENTS">Investments</option>
+                <option value="INSURANCE">Insurance</option>
+                <option value="NONE">No Collateral</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="collateralValue" class="form-label">Collateral Value (₹)</label>
+              <input 
+                id="collateralValue"
+                type="number" 
+                class="form-input" 
+                formControlName="collateralValue"
+                placeholder="Enter collateral value"
+              />
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="additionalDocuments" class="form-label">Additional Documents</label>
+              <textarea 
+                id="additionalDocuments"
+                class="form-input" 
+                formControlName="additionalDocuments"
+                placeholder="List any additional documents you plan to provide"
+                rows="2"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="checkEligibility()">
+            🎯 Check Eligibility
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="loanForm.invalid || isSubmitting">
+            <span *ngIf="!isSubmitting">🚀 Submit Application</span>
+            <span *ngIf="isSubmitting" class="loading-spinner">Submitting...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Available Lenders Card -->
+    <div class="lenders-card">
+      <div class="card-header">
+        <h3>🏦 Available Lenders</h3>
+        <p>Compare rates and choose your preferred lender</p>
+      </div>
+      
+      <div class="lenders-list" *ngIf="!isLoading">
+        <div *ngFor="let lender of availableLenders" class="lender-item">
+          <div class="lender-info">
+            <h4>{{ lender.name }}</h4>
+            <div class="lender-details">
+              <span class="detail-item">
+                <span class="label">Interest:</span>
+                <span class="value">{{ lender.interestRate }}</span>
+              </span>
+              <span class="detail-item">
+                <span class="label">Processing:</span>
+                <span class="value">{{ lender.processingFee }}</span>
+              </span>
+              <span class="detail-item">
+                <span class="label">Max Amount:</span>
+                <span class="value">₹{{ lender.maxAmount.toLocaleString() }}</span>
+              </span>
+            </div>
+          </div>
+          <button class="select-lender-btn" (click)="loanForm.patchValue({preferredLender: lender.id})">
+            Select
+          </button>
+        </div>
+      </div>
+      
+      <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Loading available lenders...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="successMessage">
+    <div class="success-content">
+      <span class="success-icon">✅</span>
+      <span class="success-text">{{ successMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    <div class="error-content">
+      <span class="error-icon">❌</span>
+      <span class="error-text">{{ errorMessage }}</span>
+    </div>
+  </div>
+</div>

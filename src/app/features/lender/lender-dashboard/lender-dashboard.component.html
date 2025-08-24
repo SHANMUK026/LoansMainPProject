@@ -1,0 +1,777 @@
+<div class="lender-dashboard">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo-section">
+          <div class="logo-icon">🏦</div>
+          <div class="logo-text">
+            <h1>LendFlow</h1>
+            <p>Lender Portal</p>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="user-profile">
+          <div class="user-avatar">
+            <span>{{ currentUser?.firstName?.charAt(0) }}{{ currentUser?.lastName?.charAt(0) }}</span>
+          </div>
+          <div class="user-details">
+            <span class="user-name">{{ currentUser?.firstName }} {{ currentUser?.lastName }}</span>
+            <span class="user-company">{{ currentUser?.company || 'Lender' }}</span>
+          </div>
+          <button type="button" class="logout-btn" (click)="logout()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions">
+    <div class="action-card" (click)="showAddRuleForm = true">
+      <div class="action-icon">➕</div>
+      <h4>Add New Rule</h4>
+      <p>Create eligibility criteria</p>
+    </div>
+    
+    <div class="action-card" (click)="exportData()">
+      <div class="action-icon">📊</div>
+      <h4>Export Data</h4>
+      <p>Download CSV reports</p>
+    </div>
+    
+    <div class="action-card" (click)="viewAnalytics()">
+      <div class="action-icon">📈</div>
+      <h4>View Analytics</h4>
+      <p>Detailed insights</p>
+    </div>
+    
+    <div class="action-card" (click)="showBulkProcessing = true">
+      <div class="action-icon">⚡</div>
+      <h4>Bulk Processing</h4>
+      <p>Process multiple apps</p>
+    </div>
+    
+    <div class="action-card" (click)="showPerformanceTracking = true">
+      <div class="action-icon">🎯</div>
+      <h4>Performance</h4>
+      <p>Track metrics</p>
+    </div>
+    
+    <div class="action-card" (click)="generateComprehensiveReport()">
+      <div class="action-icon">📋</div>
+      <h4>Generate Report</h4>
+      <p>Comprehensive analysis</p>
+    </div>
+  </div>
+
+  <!-- Portfolio Overview Section -->
+  <div class="portfolio-section">
+    <h3>📊 Portfolio Overview</h3>
+    <div class="portfolio-grid">
+      <div class="portfolio-card">
+        <h4>Total Portfolio Value</h4>
+        <div class="portfolio-value">₹{{ getPortfolioMetrics().totalPortfolio.toLocaleString() }}</div>
+        <div class="portfolio-growth" [class]="getPortfolioMetrics().portfolioGrowth >= 0 ? 'positive' : 'negative'">
+          {{ getPortfolioMetrics().portfolioGrowth >= 0 ? '+' : '' }}{{ getPortfolioMetrics().portfolioGrowth.toFixed(1) }}%
+        </div>
+      </div>
+      
+      <div class="portfolio-card">
+        <h4>Active Loans</h4>
+        <div class="portfolio-value">{{ getPortfolioMetrics().activeLoans }}</div>
+        <div class="portfolio-subtitle">Current portfolio</div>
+      </div>
+      
+      <div class="portfolio-card">
+        <h4>Average Loan Size</h4>
+        <div class="portfolio-value">₹{{ getPortfolioMetrics().averageLoanSize.toLocaleString() }}</div>
+        <div class="portfolio-subtitle">Per loan</div>
+      </div>
+      
+      <div class="portfolio-card">
+        <h4>Risk Distribution</h4>
+        <div class="risk-bars">
+          <div class="risk-bar low" [style.width.%]="(getPortfolioMetrics().riskDistribution.lowRisk / getPortfolioMetrics().riskDistribution.total) * 100"></div>
+          <div class="risk-bar medium" [style.width.%]="(getPortfolioMetrics().riskDistribution.mediumRisk / getPortfolioMetrics().riskDistribution.total) * 100"></div>
+          <div class="risk-bar high" [style.width.%]="(getPortfolioMetrics().riskDistribution.highRisk / getPortfolioMetrics().riskDistribution.total) * 100"></div>
+        </div>
+        <div class="risk-labels">
+          <span>Low: {{ getPortfolioMetrics().riskDistribution.lowRisk }}</span>
+          <span>Med: {{ getPortfolioMetrics().riskDistribution.mediumRisk }}</span>
+          <span>High: {{ getPortfolioMetrics().riskDistribution.highRisk }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Insights Section -->
+  <div class="insights-section">
+    <h3>👥 Customer Insights</h3>
+    <div class="insights-grid">
+      <div class="insight-card">
+        <h4>Customer Segments</h4>
+        <div class="segment-list">
+          <div class="segment-item" *ngFor="let segment of getCustomerInsights().customerSegments">
+            <div class="segment-info">
+              <span class="segment-name">{{ segment.name }}</span>
+              <span class="segment-count">{{ segment.count }} customers</span>
+            </div>
+            <div class="segment-amount">₹{{ segment.totalAmount.toLocaleString() }}</div>
+            <div class="segment-percentage">{{ segment.percentage.toFixed(1) }}%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="insight-card">
+        <h4>Top Customers</h4>
+        <div class="top-customers-list">
+          <div class="customer-item" *ngFor="let customer of getCustomerInsights().topCustomers; let i = index">
+            <div class="customer-rank">#{{ i + 1 }}</div>
+            <div class="customer-info">
+              <span class="customer-id">ID: {{ customer.customerId }}</span>
+              <span class="customer-loans">{{ customer.loanCount }} loans</span>
+            </div>
+            <div class="customer-total">₹{{ customer.totalAmount.toLocaleString() }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="insight-card">
+        <h4>Retention Metrics</h4>
+        <div class="retention-stats">
+          <div class="retention-item">
+            <span class="retention-label">Total Customers</span>
+            <span class="retention-value">{{ getCustomerInsights().totalCustomers }}</span>
+          </div>
+          <div class="retention-item">
+            <span class="retention-label">Repeat Customers</span>
+            <span class="retention-value">{{ getCustomerInsights().repeatCustomers.length }}</span>
+          </div>
+          <div class="retention-item">
+            <span class="retention-label">Retention Rate</span>
+            <span class="retention-value">{{ getCustomerInsights().customerRetentionRate.toFixed(1) }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smart Recommendations Section -->
+  <div class="recommendations-section" *ngIf="selectedApplication">
+    <h3>🧠 Smart Loan Recommendations</h3>
+    <div class="recommendations-grid">
+      <div class="recommendation-card primary">
+        <h4>Primary Recommendation</h4>
+        <div class="recommendation-details">
+          <div class="rec-item">
+            <span class="rec-label">Amount:</span>
+            <span class="rec-value">₹{{ getSmartLoanRecommendations(selectedApplication).recommendedAmount.toLocaleString() }}</span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Term:</span>
+            <span class="rec-value">{{ getSmartLoanRecommendations(selectedApplication).recommendedTerm }} months</span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Interest Rate:</span>
+            <span class="rec-value">{{ getSmartLoanRecommendations(selectedApplication).interestRate }}%</span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Monthly Payment:</span>
+            <span class="rec-value">₹{{ getSmartLoanRecommendations(selectedApplication).monthlyPayment.toLocaleString() }}</span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Risk Level:</span>
+            <span class="rec-value" [class]="getSmartLoanRecommendations(selectedApplication).riskLevel">{{ getSmartLoanRecommendations(selectedApplication).riskLevel.toUpperCase() }}</span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Confidence:</span>
+            <span class="rec-value">{{ getSmartLoanRecommendations(selectedApplication).confidence }}%</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="recommendation-card alternatives">
+        <h4>Alternative Options</h4>
+        <div class="alternatives-list">
+          <div class="alternative-item" *ngFor="let alt of getSmartLoanRecommendations(selectedApplication).alternativeOptions">
+            <div class="alt-header">
+              <span class="alt-type">{{ alt.type }}</span>
+              <span class="alt-amount">₹{{ alt.amount.toLocaleString() }}</span>
+            </div>
+            <div class="alt-details">
+              <span>{{ alt.term }} months &#64; {{ alt.interestRate }}%</span>
+              <span>Monthly: ₹{{ alt.monthlyPayment.toLocaleString() }}</span>
+            </div>
+            <div class="alt-features" *ngIf="alt.requiresCollateral">
+              <span class="feature-badge">Requires Collateral</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Comparison Tool Section -->
+  <div class="comparison-section">
+    <h3>⚖️ Loan Comparison Tool</h3>
+    <div class="comparison-controls">
+      <div class="control-group">
+        <label>Base Loan Amount:</label>
+        <input type="number" [(ngModel)]="comparisonBaseAmount" placeholder="50000" class="comparison-input">
+      </div>
+      <div class="control-group">
+        <label>Base Term (months):</label>
+        <input type="number" [(ngModel)]="comparisonBaseTerm" placeholder="24" class="comparison-input">
+      </div>
+      <button class="generate-btn" (click)="generateComparisonScenarios()">Generate Scenarios</button>
+    </div>
+    
+    <div class="comparison-results" *ngIf="comparisonScenarios.length > 0">
+      <h4>Comparison Results</h4>
+      <div class="scenarios-grid">
+        <div class="scenario-card" *ngFor="let scenario of comparisonScenarios; let i = index">
+          <div class="scenario-header">
+            <h5>{{ scenario.name }}</h5>
+            <div class="scenario-rank">#{{ i + 1 }}</div>
+          </div>
+          <div class="scenario-details">
+            <div class="scenario-item">
+              <span class="item-label">Amount:</span>
+              <span class="item-value">₹{{ scenario.amount.toLocaleString() }}</span>
+            </div>
+            <div class="scenario-item">
+              <span class="item-label">Term:</span>
+              <span class="item-value">{{ scenario.term }} months</span>
+            </div>
+            <div class="scenario-item">
+              <span class="item-label">Interest Rate:</span>
+              <span class="item-value">{{ scenario.interestRate }}%</span>
+            </div>
+            <div class="scenario-item">
+              <span class="item-label">Monthly Payment:</span>
+              <span class="item-value">₹{{ scenario.monthlyPayment.toLocaleString() }}</span>
+            </div>
+            <div class="scenario-item">
+              <span class="item-label">Total Interest:</span>
+              <span class="item-value">₹{{ scenario.totalInterest.toLocaleString() }}</span>
+            </div>
+            <div class="scenario-item">
+              <span class="item-label">APR:</span>
+              <span class="item-value">{{ scenario.apr }}%</span>
+            </div>
+            <div class="scenario-item">
+              <span class="item-label">Affordability:</span>
+              <span class="item-value" [class]="getAffordabilityClass(scenario.affordability)">{{ scenario.affordability }}/100</span>
+            </div>
+            <div class="scenario-item">
+              <span class="item-label">Risk Score:</span>
+              <span class="item-value" [class]="getRiskClass(scenario.riskScore)">{{ scenario.riskScore }}/100</span>
+            </div>
+          </div>
+          <div class="scenario-description">
+            {{ scenario.description }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="comparison-actions">
+        <button class="download-btn" (click)="generateLoanComparisonReport(comparisonScenarios)">
+          📊 Download Comparison Report
+        </button>
+        <button class="clear-btn" (click)="clearComparison()">
+          🗑️ Clear Comparison
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications Section -->
+  <div class="notifications-section" *ngIf="notifications.length > 0">
+    <div class="notification-card" *ngFor="let notification of notifications; let i = index">
+      <div class="notification-icon" [class]="notification.type">
+        {{ getNotificationIcon(notification.type) }}
+      </div>
+      <div class="notification-content">
+        <h4>{{ notification.message }}</h4>
+        <span class="notification-time">{{ notification.timestamp | date:'short' }}</span>
+      </div>
+      <button class="notification-close" (click)="dismissNotification(i)">×</button>
+    </div>
+  </div>
+
+  <!-- Dashboard Stats -->
+  <div class="stats-section">
+    <div class="stat-card primary">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div class="stat-trend positive">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"/>
+          </svg>
+          +{{ getGrowthRate() }}%
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>{{ loanApplications.length }}</h3>
+        <p>Total Applications</p>
+        <span class="stat-subtitle">This month</span>
+      </div>
+    </div>
+
+    <div class="stat-card warning">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-trend neutral">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+          </svg>
+          0%
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getPendingCount() }}</h3>
+        <p>Pending Review</p>
+        <span class="stat-subtitle">Requires attention</span>
+      </div>
+    </div>
+
+    <div class="stat-card success">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-trend positive">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"/>
+          </svg>
+          +8%
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getApprovedCount() }}</h3>
+        <p>Approved Loans</p>
+        <span class="stat-subtitle">This month</span>
+      </div>
+    </div>
+
+    <div class="stat-card info">
+      <div class="stat-header">
+        <div class="stat-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div class="stat-trend positive">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l9.2-9.2M17 17V7H7"/>
+          </svg>
+          +2
+        </div>
+      </div>
+      <div class="stat-content">
+        <h3>{{ eligibilityRules.length }}</h3>
+        <p>Active Rules</p>
+        <span class="stat-subtitle">Eligibility criteria</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Eligibility Rules Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2>🎯 Eligibility Rules</h2>
+        <button class="add-btn" (click)="showAddRuleForm = !showAddRuleForm">
+          {{ showAddRuleForm ? '❌ Cancel' : '➕ Add Rule' }}
+        </button>
+      </div>
+
+      <!-- Add Rule Form -->
+      <div class="add-rule-form" *ngIf="showAddRuleForm">
+        <form [formGroup]="ruleForm" (ngSubmit)="addEligibilityRule()" class="rule-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Minimum Salary (₹)</label>
+              <input type="number" formControlName="minSalary" placeholder="50000">
+            </div>
+            <div class="form-group">
+              <label>Minimum Loan Amount (₹)</label>
+              <input type="number" formControlName="minLoanAmount" placeholder="10000">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Maximum Loan Amount (₹)</label>
+              <input type="number" formControlName="maxLoanAmount" placeholder="500000">
+            </div>
+            <div class="form-group">
+              <label>Minimum Credit Score</label>
+              <input type="number" formControlName="minCreditScore" placeholder="650">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Minimum Age</label>
+              <input type="number" formControlName="minAge" placeholder="21">
+            </div>
+            <div class="form-group">
+              <label>Maximum Age</label>
+              <input type="number" formControlName="maxAge" placeholder="65">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Employment Types *</label>
+              <select formControlName="employmentTypes" multiple class="employment-select">
+                <option value="EMPLOYED">👔 Employed</option>
+                <option value="SELF_EMPLOYED">💼 Self Employed</option>
+                <option value="STUDENT">🎓 Student</option>
+                <option value="UNEMPLOYED">🏠 Not Employed</option>
+              </select>
+              <small class="form-hint">Hold Ctrl/Cmd to select multiple options</small>
+            </div>
+            <div class="form-group">
+              <label>Rule Status</label>
+              <select formControlName="isActive">
+                <option [value]="true">✅ Active</option>
+                <option [value]="false">❌ Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="!ruleForm.valid">💾 Save Rule</button>
+        </form>
+      </div>
+
+      <!-- Rules List -->
+      <div class="rules-grid">
+        <div class="rule-card" *ngFor="let rule of eligibilityRules">
+          <div class="rule-header">
+            <h3>Rule #{{ rule.id }}</h3>
+            <div class="rule-actions">
+              <button class="toggle-btn" [class.active]="rule.isActive" 
+                      (click)="toggleRuleStatus(rule)">
+                {{ rule.isActive ? '🟢' : '🔴' }}
+              </button>
+              <button class="delete-btn" (click)="deleteRule(rule.id!)">🗑️</button>
+            </div>
+          </div>
+          <div class="rule-details">
+            <div class="rule-row">
+              <span class="label">Salary Range:</span>
+              <span class="value">≥ ₹{{ rule.minSalary.toLocaleString() }}</span>
+            </div>
+            <div class="rule-row">
+              <span class="label">Loan Range:</span>
+              <span class="value">₹{{ (rule.minLoanAmount || 0).toLocaleString() }} - ₹{{ rule.maxLoanAmount.toLocaleString() }}</span>
+            </div>
+            <div class="rule-row">
+              <span class="label">Credit Score:</span>
+              <span class="value">≥ {{ rule.minCreditScore }}</span>
+            </div>
+            <div class="rule-row">
+              <span class="label">Age Range:</span>
+              <span class="value">{{ rule.minAge }} - {{ rule.maxAge }} years</span>
+            </div>
+            <div class="rule-row">
+              <span class="label">Employment Types:</span>
+              <span class="value">{{ (rule.employmentTypes || []).join(', ') || 'All Types' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Applications Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2>📝 Loan Applications</h2>
+        <div class="section-actions">
+          <button class="bulk-process-btn" (click)="showBulkProcessing = true" 
+                  [disabled]="getPendingCount() === 0">
+            🚀 Bulk Process ({{ getPendingCount() }})
+          </button>
+          <button class="performance-btn" (click)="showPerformanceTracking = true">
+            📊 Performance Tracking
+          </button>
+        </div>
+      </div>
+
+      <div class="applications-grid">
+        <div class="application-card" *ngFor="let application of loanApplications">
+          <div class="app-header">
+            <div class="app-id">#{{ application.id }}</div>
+            <div class="app-status" [class]="getStatusClass(application.status)">
+              {{ getStatusIcon(application.status) }} {{ application.status }}
+            </div>
+          </div>
+          
+          <div class="app-details">
+            <div class="app-row">
+              <span class="label">Borrower:</span>
+              <span class="value">{{ getBorrowerName(application.borrowerId) }}</span>
+            </div>
+            <div class="app-row">
+              <span class="label">Loan Amount:</span>
+              <span class="value">₹{{ (application.loanAmount || application.requestedAmount || 0).toLocaleString() }}</span>
+            </div>
+            <div class="app-row">
+              <span class="label">Purpose:</span>
+              <span class="value">{{ application.loanPurpose || 'N/A' }}</span>
+            </div>
+            <div class="app-row">
+              <span class="label">Term:</span>
+              <span class="value">{{ application.loanTerm || 'N/A' }} months</span>
+            </div>
+            <div class="app-row">
+              <span class="label">Eligibility Score:</span>
+              <span class="value" [ngClass]="getScoreClass(application.eligibilityScore)">
+                {{ application.eligibilityScore || 'N/A' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="app-actions">
+            <button class="view-btn" (click)="viewApplicationDetails(application)">
+              👁️ View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Details Modal -->
+  <div class="modal-overlay" *ngIf="showApplicationDetails" (click)="showApplicationDetails = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Application Details #{{ selectedApplication?.id }}</h3>
+        <button class="close-btn" (click)="showApplicationDetails = false">✕</button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedApplication">
+        <div class="borrower-info">
+          <h4>Borrower Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Name:</span>
+              <span class="value">{{ getBorrowerName(selectedApplication.borrowerId) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Monthly Income:</span>
+              <span class="value">₹{{ (selectedApplication.monthlyIncome || 0).toLocaleString() }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Credit Score:</span>
+              <span class="value">{{ selectedApplication.creditScore }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Employment:</span>
+              <span class="value">{{ selectedApplication.employmentStatus }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="loan-info">
+          <h4>Loan Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Amount:</span>
+              <span class="value">${{ selectedApplication.loanAmount.toLocaleString() }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Purpose:</span>
+              <span class="value">{{ selectedApplication.loanPurpose }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Term:</span>
+              <span class="value">{{ selectedApplication.loanTerm }} months</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Monthly EMI:</span>
+              <span class="value">${{ selectedApplication.monthlyEMI?.toLocaleString() || 'N/A' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="applicationForm" class="decision-form">
+          <h4>Decision</h4>
+          <div class="form-group">
+            <label>Status</label>
+            <select formControlName="status">
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Eligibility Score</label>
+            <input type="number" formControlName="eligibilityScore" min="0" max="100">
+          </div>
+          <div class="form-group">
+            <label>Comments</label>
+            <textarea formControlName="comments" rows="3" placeholder="Add your decision comments..."></textarea>
+          </div>
+          <button type="button" class="update-btn" (click)="updateApplicationStatus()">
+            💾 Update Application
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Processing Modal -->
+  <div class="modal-overlay" *ngIf="showBulkProcessing" (click)="showBulkProcessing = false">
+    <div class="modal-content bulk-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>🚀 Bulk Loan Processing</h3>
+        <button class="close-btn" (click)="showBulkProcessing = false">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="bulk-info">
+          <p>Process <strong>{{ getPendingCount() }}</strong> pending applications at once</p>
+          <div class="bulk-options">
+            <div class="option-group">
+              <label>Auto-approval for high scores:</label>
+              <select [(ngModel)]="bulkSettings.minCreditScore">
+                <option value="0">Manual review only</option>
+                <option value="650">650+ (Good credit)</option>
+                <option value="700">700+ (Very good credit)</option>
+                <option value="750">750+ (Excellent credit)</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label>Maximum loan amount for auto-approval:</label>
+              <select [(ngModel)]="bulkSettings.maxLoanAmount">
+                <option value="10000">₹10,000</option>
+                <option value="25000">₹25,000</option>
+                <option value="50000">₹50,000</option>
+                <option value="100000">₹100,000</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label>Batch size:</label>
+              <select [(ngModel)]="bulkSettings.batchSize">
+                <option value="5">5 applications</option>
+                <option value="10">10 applications</option>
+                <option value="20">20 applications</option>
+                <option value="50">50 applications</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label>
+                <input type="checkbox" [(ngModel)]="bulkSettings.autoApprove">
+                Enable auto-approval for low-risk applications
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="bulk-preview">
+          <h4>Applications to Process:</h4>
+          <div class="app-preview-list">
+            <div class="app-preview-item" *ngFor="let app of getPendingApplications()">
+              <span class="app-id">#{{ app.id }}</span>
+              <span class="borrower-name">{{ getBorrowerName(app.borrowerId) }}</span>
+              <span class="amount">₹{{ (app.loanAmount || app.requestedAmount || 0).toLocaleString() }}</span>
+              <span class="score" [ngClass]="getScoreClass(app.eligibilityScore)">
+                {{ app.eligibilityScore || 'N/A' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bulk-actions">
+          <button class="process-btn" (click)="processBulkApplications()" 
+                  [disabled]="isBulkProcessing">
+            {{ isBulkProcessing ? '🔄 Processing...' : '🚀 Process All Applications' }}
+          </button>
+          <button class="cancel-btn" (click)="showBulkProcessing = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Tracking Modal -->
+  <div class="modal-overlay" *ngIf="showPerformanceTracking" (click)="showPerformanceTracking = false">
+    <div class="modal-content performance-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>📊 Loan Performance Tracking</h3>
+        <button class="close-btn" (click)="showPerformanceTracking = false">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="performance-stats">
+          <div class="stat-card">
+            <h4>💰 Total Approved Loans</h4>
+            <div class="stat-value">₹{{ getTotalApprovedAmount().toLocaleString() }}</div>
+            <div class="stat-label">{{ getApprovedCount() }} loans</div>
+          </div>
+          <div class="stat-card">
+            <h4>📈 Average Loan Size</h4>
+            <div class="stat-value">₹{{ getAverageApprovedAmount().toLocaleString() }}</div>
+            <div class="stat-label">Per approved loan</div>
+          </div>
+          <div class="stat-card">
+            <h4>🎯 Approval Rate</h4>
+            <div class="stat-value">{{ getApprovalRate().toFixed(1) }}%</div>
+            <div class="stat-label">This month</div>
+          </div>
+        </div>
+
+        <div class="performance-chart">
+          <h4>Monthly Performance Trend</h4>
+          <div class="chart-container">
+            <div class="monthly-bar" *ngFor="let month of monthlyPerformance">
+              <div class="bar-label">{{ month.month }}</div>
+              <div class="bar-container">
+                <div class="bar approved" [style.height.%]="(month.approved / 30) * 100"></div>
+                <div class="bar rejected" [style.height.%]="(month.rejected / 30) * 100"></div>
+              </div>
+              <div class="bar-total">{{ month.total }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="top-performers">
+          <h4>🏆 Top Performing Loan Categories</h4>
+          <div class="category-list">
+            <div class="category-item" *ngFor="let category of topLoanCategories">
+              <span class="category-name">{{ category.name }}</span>
+              <span class="category-amount">₹{{ category.amount.toLocaleString() }}</span>
+              <span class="category-count">{{ category.count }} loans</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="performance-actions">
+          <button class="export-performance-btn" (click)="exportPerformanceReport()">
+            📊 Export Performance Report
+          </button>
+          <button class="close-btn" (click)="showPerformanceTracking = false">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

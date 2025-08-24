@@ -1,0 +1,271 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "password123",
+      "email": "admin@loans.com",
+      "role": "ADMIN",
+      "firstName": "Admin",
+      "lastName": "User",
+      "phone": "+1-555-0001",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "id": "2",
+      "username": "lender",
+      "password": "password123",
+      "email": "lender@loans.com",
+      "role": "LENDER",
+      "firstName": "John",
+      "lastName": "Lender",
+      "phone": "+1-555-0002",
+      "company": "Prime Lending Corp",
+      "lendingLicense": "LIC123456",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "id": "3",
+      "username": "borrower",
+      "password": "password123",
+      "email": "borrower@loans.com",
+      "role": "BORROWER",
+      "firstName": "Sarah",
+      "lastName": "Borrower",
+      "phone": "+1-555-0003",
+      "dateOfBirth": "1990-05-15",
+      "address": "123 Main St, City, State 12345",
+      "monthlyIncome": 6500,
+      "creditScore": 720,
+      "employmentStatus": "EMPLOYED",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "id": "9fdf",
+      "username": "loan_master01",
+      "email": "loanmaster01@example.com",
+      "password": "Test@1234",
+      "role": "LENDER",
+      "firstName": "Ravi",
+      "lastName": "Kumar",
+      "phone": "9876543210",
+      "company": "FastLoans Pvt Ltd",
+      "lendingLicense": "LIC-987654"
+    },
+    {
+      "id": "5535",
+      "username": "SHANMUK",
+      "email": "SHHANNU02@GMAIL.COM",
+      "password": "WTPGjmda@09",
+      "role": "BORROWER",
+      "firstName": "SHANMUK",
+      "lastName": "CHOWDARY",
+      "phone": "8686859588"
+    },
+    {
+      "id": "5536",
+      "username": "vishwateja",
+      "email": "vishwateja055@gmail.com",
+      "password": "maniteja0506",
+      "roles": [
+        "LENDER"
+      ],
+      "role": "LENDER",
+      "firstName": "vishwa",
+      "lastName": "teja",
+      "phone": "8688562536",
+      "company": "teja",
+      "lendingLicense": "8688562536"
+    }
+  ],
+  "lenders": [
+    {
+      "id": "1",
+      "userId": 2,
+      "companyName": "Prime Lending Corp",
+      "lendingLicense": "LIC123456",
+      "minLoanAmount": 5000,
+      "maxLoanAmount": 500000,
+      "minCreditScore": 650,
+      "minMonthlyIncome": 4000,
+      "minAge": 21,
+      "maxAge": 65,
+      "interestRateRange": {
+        "min": 5.5,
+        "max": 12.5
+      },
+      "loanTerms": [
+        12,
+        24,
+        36,
+        48,
+        60
+      ],
+      "specializations": [
+        "Personal Loans",
+        "Business Loans",
+        "Home Improvement"
+      ],
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "loanApplications": [
+    {
+      "id": "1",
+      "borrowerId": 3,
+      "lenderId": 1,
+      "loanAmount": 25000,
+      "loanPurpose": "Home Improvement",
+      "loanTerm": 36,
+      "monthlyIncome": 6500,
+      "creditScore": 720,
+      "employmentStatus": "EMPLOYED",
+      "documents": [
+        {
+          "type": "PAN_CARD",
+          "url": "pan_card_borrower_3.pdf",
+          "uploadedAt": "2024-01-15T10:00:00.000Z"
+        },
+        {
+          "type": "AADHAR_CARD",
+          "url": "aadhar_card_borrower_3.pdf",
+          "uploadedAt": "2024-01-15T10:00:00.000Z"
+        },
+        {
+          "type": "SALARY_SLIP",
+          "url": "salary_slip_borrower_3.pdf",
+          "uploadedAt": "2024-01-15T10:00:00.000Z"
+        }
+      ],
+      "status": "PENDING",
+      "eligibilityScore": 85,
+      "monthlyEMI": 850,
+      "totalInterest": 5600,
+      "totalAmount": 30600,
+      "appliedAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "eligibilityRules": [
+    {
+      "id": "1",
+      "lenderId": 1,
+      "ruleName": "Standard Personal Loan",
+      "minLoanAmount": 5000,
+      "maxLoanAmount": 500000,
+      "minCreditScore": 650,
+      "minMonthlyIncome": 4000,
+      "minAge": 21,
+      "maxAge": 65,
+      "employmentTypes": [
+        "EMPLOYED",
+        "SELF_EMPLOYED"
+      ],
+      "interestRate": 8.5,
+      "processingFee": 500,
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "lenderId": 1,
+      "ruleName": "Premium Loan (High Credit Score)",
+      "minLoanAmount": 10000,
+      "maxLoanAmount": 1000000,
+      "minCreditScore": 750,
+      "minMonthlyIncome": 8000,
+      "minAge": 25,
+      "maxAge": 60,
+      "employmentTypes": [
+        "EMPLOYED"
+      ],
+      "interestRate": 6.5,
+      "processingFee": 300,
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "1",
+      "userId": 3,
+      "type": "APPLICATION_STATUS",
+      "title": "Loan Application Submitted",
+      "message": "Your loan application for $25,000 has been submitted successfully. Application ID: #001",
+      "isRead": false,
+      "createdAt": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "userId": 2,
+      "type": "NEW_APPLICATION",
+      "title": "New Loan Application",
+      "message": "New loan application received from Sarah Borrower for $25,000",
+      "isRead": false,
+      "createdAt": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "loanCalculator": {
+    "defaultRates": {
+      "personalLoan": 8.5,
+      "businessLoan": 10.5,
+      "homeLoan": 7.5
+    },
+    "processingFees": {
+      "personalLoan": 500,
+      "businessLoan": 1000,
+      "homeLoan": 800
+    }
+  },
+  "lenderRules": [
+    {
+      "id": "1",
+      "lenderId": 1,
+      "minSalary": 50000,
+      "minLoanAmount": 10000,
+      "maxLoanAmount": 500000,
+      "minCreditScore": 650,
+      "minAge": 21,
+      "maxAge": 65,
+      "employmentTypes": [
+        "EMPLOYED",
+        "SELF_EMPLOYED"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "2",
+      "lenderId": 1,
+      "minSalary": 30000,
+      "minLoanAmount": 5000,
+      "maxLoanAmount": 200000,
+      "minCreditScore": 600,
+      "minAge": 18,
+      "maxAge": 70,
+      "employmentTypes": [
+        "EMPLOYED",
+        "SELF_EMPLOYED",
+        "STUDENT"
+      ],
+      "isActive": true
+    },
+    {
+      "id": "d238",
+      "lenderId": 1,
+      "minSalary": 60000,
+      "minLoanAmount": 15000,
+      "maxLoanAmount": 300000,
+      "minCreditScore": 700,
+      "minAge": 25,
+      "maxAge": 60,
+      "employmentTypes": [
+        "EMPLOYED"
+      ],
+      "isActive": true
+    }
+  ]
+}

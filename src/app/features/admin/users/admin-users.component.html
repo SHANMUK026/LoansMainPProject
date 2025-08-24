@@ -1,0 +1,100 @@
+<header class="app-header">
+  <div class="container">
+    <h1 class="app-title">Loan Eligibility Checker</h1>
+    <div class="user-info">
+      <button class="btn btn--ghost" (click)="goBack()">← Back to Dashboard</button>
+      <button class="btn btn--danger" (click)="logout()">🚪 Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  <div class="container">
+    <div class="card">
+      <div class="card__header">
+        <h1 class="card__title">Users</h1>
+        <p class="card__subtitle">View all system users</p>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="card text-center">
+      <div class="spinner"></div>
+      <p class="mt-md">Loading users...</p>
+    </div>
+
+    <div *ngIf="!isLoading && errorMessage" class="card">
+      <div class="form__error text-center">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage" class="card">
+      <div *ngIf="users.length === 0" class="text-center">
+        <p>No users found.</p>
+      </div>
+
+      <div *ngIf="users.length > 0">
+        <table class="table">
+          <thead class="table__header">
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Roles</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users" class="table__row">
+              <td class="table__cell">#{{ user.id }}</td>
+              <td class="table__cell">{{ user.username }}</td>
+              <td class="table__cell">{{ user.email || 'N/A' }}</td>
+              <td class="table__cell">
+                <span 
+                  *ngFor="let role of user.roles; let last = last" 
+                  class="badge" 
+                  [class]="getRoleBadgeClass(role)"
+                  style="margin-right: var(--spacing-xs);"
+                >
+                  {{ role }}
+                </span>
+              </td>
+              <td class="table__cell">
+                <div class="form__actions">
+                  <button class="btn btn--ghost" (click)="viewUserDetails(user)">
+                    <span>👁️</span>
+                    View
+                  </button>
+                  <button class="btn btn--ghost" (click)="approveUser(user)">
+                    <span>✅</span>
+                    Approve
+                  </button>
+                  <button class="btn btn--ghost" (click)="activateUser(user)">
+                    <span>🔄</span>
+                    Activate
+                  </button>
+                  <button class="btn btn--warning" (click)="suspendUser(user)">
+                    <span>⏸️</span>
+                    Suspend
+                  </button>
+                  <button class="btn btn--ghost" (click)="resetUserPassword(user)">
+                    <span>🔑</span>
+                    Reset Password
+                  </button>
+                  <button class="btn btn--danger" (click)="deleteUser(user)">
+                    <span>🗑️</span>
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form__actions mt-lg">
+          <a routerLink="/dashboard" class="btn btn--ghost">Back to Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

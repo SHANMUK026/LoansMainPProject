@@ -1,0 +1,248 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="dashboard__header">
+    <div class="container">
+      <div class="header__content">
+        <div class="header__brand">
+          <div class="brand__logo">
+            <svg fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <h1 class="brand__title">Loan Eligibility Checker</h1>
+        </div>
+        
+        <div class="header__user">
+          <div class="user__info">
+            <span class="user__name">{{ currentUser?.username || 'User' }}</span>
+                            <span class="user__role">{{ getRoleDisplayName(currentUser?.role) }}</span>
+          </div>
+          <button class="btn btn--outline btn--sm" (click)="logout()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard__main">
+    <div class="container">
+      <!-- Welcome Section -->
+      <section class="welcome__section">
+        <div class="welcome__content">
+          <h2 class="welcome__title">Welcome back, {{ currentUser?.username || 'User' }}! 👋</h2>
+          <p class="welcome__subtitle">Here's what you can do with your {{ getRoleDisplayName(currentUser?.role) }} account</p>
+        </div>
+      </section>
+
+      <!-- Dashboard Tiles -->
+      <section class="dashboard__tiles">
+        <div class="tiles__grid" [ngClass]="getTilesGridClass()">
+          
+          <!-- Customer/Borrower Tiles -->
+          <ng-container *ngIf="hasRole('BORROWER')">
+            <div class="tile card hover--lift animate--fade-in" routerLink="/customer/profile">
+              <div class="tile__icon tile__icon--profile">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">My Profile</h3>
+              <p class="tile__description">Update your personal and financial information</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="tile card hover--lift animate--fade-in" routerLink="/customer/apply-loan">
+              <div class="tile__icon tile__icon--apply">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">Apply for Loan</h3>
+              <p class="tile__description">Submit a new loan application</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="tile card hover--lift animate--fade-in" routerLink="/customer/my-applications">
+              <div class="tile__icon tile__icon--applications">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">My Applications</h3>
+              <p class="tile__description">View and track your loan applications</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Lender Tiles -->
+          <ng-container *ngIf="hasRole('LENDER')">
+            <div class="tile card hover--lift animate--fade-in" routerLink="/lender/rules">
+              <div class="tile__icon tile__icon--rules">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">Eligibility Rules</h3>
+              <p class="tile__description">Manage your lending criteria and rules</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="tile card hover--lift animate--fade-in" routerLink="/lender/profile">
+              <div class="tile__icon tile__icon--profile">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">Lender Profile</h3>
+              <p class="tile__description">Update your lending institution details</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="tile card hover--lift animate--fade-in">
+              <div class="tile__icon tile__icon--applications">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">Review Applications</h3>
+              <p class="tile__description">Review and process loan applications</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Admin Tiles -->
+          <ng-container *ngIf="hasRole('ADMIN')">
+            <div class="tile card hover--lift animate--fade-in" routerLink="/admin/users">
+              <div class="tile__icon tile__icon--admin">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">User Management</h3>
+              <p class="tile__description">Manage all users and their permissions</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="tile card hover--lift animate--fade-in">
+              <div class="tile__icon tile__icon--analytics">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">System Analytics</h3>
+              <p class="tile__description">View system performance and statistics</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="tile card hover--lift animate--fade-in">
+              <div class="tile__icon tile__icon--settings">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+              <h3 class="tile__title">System Settings</h3>
+              <p class="tile__description">Configure system-wide settings</p>
+              <div class="tile__arrow">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </section>
+
+      <!-- Quick Stats -->
+      <section class="stats__section" *ngIf="hasRole('ADMIN')">
+        <h3 class="stats__title">Quick Statistics</h3>
+        <div class="stats__grid grid grid--4 gap--lg">
+          <div class="stat__card card">
+            <div class="stat__icon stat__icon--users">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+              </svg>
+            </div>
+            <div class="stat__content">
+              <span class="stat__value">1,234</span>
+              <span class="stat__label">Total Users</span>
+            </div>
+          </div>
+
+          <div class="stat__card card">
+            <div class="stat__icon stat__icon--loans">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div class="stat__content">
+              <span class="stat__value">567</span>
+              <span class="stat__label">Active Loans</span>
+            </div>
+          </div>
+
+          <div class="stat__card card">
+            <div class="stat__icon stat__icon--lenders">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <div class="stat__content">
+              <span class="stat__value">89</span>
+              <span class="stat__label">Lenders</span>
+            </div>
+          </div>
+
+          <div class="stat__card card">
+            <div class="stat__icon stat__icon--success">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="stat__content">
+              <span class="stat__value">92%</span>
+              <span class="stat__label">Success Rate</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,148 @@
+<div class="admin-settings-container">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="app-title">⚙️ System Settings</h1>
+        <div class="user-info">
+          <button class="btn btn--ghost" (click)="goBack()">
+            <span>←</span>
+            Back to Dashboard
+          </button>
+          <button class="btn btn--danger" (click)="logout()">
+            <span>🚪</span>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Settings Card -->
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">Platform Configuration</h2>
+          <p class="card__subtitle">Manage system parameters and platform behavior</p>
+        </div>
+
+        <!-- Settings Form -->
+        <div class="settings-form">
+          <!-- Loan Configuration Section -->
+          <div class="settings-section">
+            <h3 class="section-title">💰 Loan Configuration</h3>
+            <div class="settings-grid">
+              <div class="setting-item">
+                <label for="maxLoanAmount">Maximum Loan Amount (₹)</label>
+                <input 
+                  type="number" 
+                  id="maxLoanAmount"
+                  class="form-input" 
+                  [value]="systemSettings.maxLoanAmount"
+                  (input)="onInputChange('maxLoanAmount', $event)"
+                  min="100000"
+                  max="100000000"
+                  step="100000"
+                >
+                <span class="setting-hint">Maximum amount that can be borrowed</span>
+              </div>
+
+              <div class="setting-item">
+                <label for="minCreditScore">Minimum Credit Score</label>
+                <input 
+                  type="number" 
+                  id="minCreditScore"
+                  class="form-input" 
+                  [value]="systemSettings.minCreditScore"
+                  (input)="onInputChange('minCreditScore', $event)"
+                  min="300"
+                  max="850"
+                  step="10"
+                >
+                <span class="setting-hint">Minimum credit score required for loan approval</span>
+              </div>
+
+              <div class="setting-item">
+                <label for="maxLoanTerm">Maximum Loan Term (months)</label>
+                <input 
+                  type="number" 
+                  id="maxLoanTerm"
+                  class="form-input" 
+                  [value]="systemSettings.maxLoanTerm"
+                  (input)="onInputChange('maxLoanTerm', $event)"
+                  min="12"
+                  max="120"
+                  step="12"
+                >
+                <span class="setting-hint">Maximum repayment period in months</span>
+              </div>
+
+              <div class="setting-item">
+                <label for="autoApprovalThreshold">Auto-Approval Threshold (%)</label>
+                <input 
+                  type="number" 
+                  id="autoApprovalThreshold"
+                  class="form-input" 
+                  [value]="systemSettings.autoApprovalThreshold"
+                  (input)="onInputChange('autoApprovalThreshold', $event)"
+                  min="50"
+                  max="100"
+                  step="5"
+                >
+                <span class="setting-hint">Eligibility score threshold for automatic approval</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Behavior Section -->
+          <div class="settings-section">
+            <h3 class="section-title">🔧 System Behavior</h3>
+            <div class="settings-grid">
+              <div class="setting-item">
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    class="form-checkbox"
+                    [checked]="systemSettings.notificationEnabled"
+                    (change)="onCheckboxChange('notificationEnabled', $event)"
+                  >
+                  <span class="checkmark"></span>
+                  Enable Notifications
+                </label>
+                <span class="setting-hint">Send email and in-app notifications to users</span>
+              </div>
+
+              <div class="setting-item">
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    class="form-checkbox"
+                    [checked]="systemSettings.maintenanceMode"
+                    (change)="onCheckboxChange('maintenanceMode', $event)"
+                  >
+                  <span class="checkmark"></span>
+                  Maintenance Mode
+                </label>
+                <span class="setting-hint">Temporarily disable platform for maintenance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form__actions">
+            <button class="btn btn--ghost" (click)="resetSettings()">
+              <span>🔄</span>
+              Reset to Defaults
+            </button>
+            <button class="btn btn--primary" (click)="saveSettings()">
+              <span>💾</span>
+              Save Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,100 @@
+<div class="admin-lenders-container">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="app-title">🏦 Lender Management</h1>
+        <div class="user-info">
+          <button class="btn btn--ghost" (click)="goBack()">
+            <span>←</span>
+            Back to Dashboard
+          </button>
+          <button class="btn btn--danger" (click)="logout()">
+            <span>🚪</span>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Lender Management Card -->
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">Lender Management</h2>
+          <p class="card__subtitle">Manage lender accounts and monitor their activities</p>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="text-center">
+          <div class="spinner"></div>
+          <p>Loading lenders...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage" class="form__error">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Lenders Table -->
+        <div *ngIf="!isLoading && !errorMessage">
+          <div *ngIf="lenders.length > 0; else noLenders">
+            <table class="table">
+              <thead class="table__header">
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let lender of lenders" class="table__row">
+                  <td class="table__cell">{{ lender.id }}</td>
+                  <td class="table__cell">{{ lender.username }}</td>
+                  <td class="table__cell">{{ lender.firstName }} {{ lender.lastName }}</td>
+                  <td class="table__cell">{{ lender.email }}</td>
+                  <td class="table__cell">
+                    <span class="badge" [ngClass]="getStatusBadgeClass(getLenderStatus(lender))">
+                      {{ getLenderStatus(lender) }}
+                    </span>
+                  </td>
+                  <td class="table__cell">
+                    <div class="form__actions">
+                      <button class="btn btn--ghost" (click)="viewLenderDetails(lender)">
+                        <span>👁️</span>
+                        View
+                      </button>
+                      <button class="btn btn--ghost" (click)="approveLender(lender)">
+                        <span>✅</span>
+                        Approve
+                      </button>
+                      <button class="btn btn--danger" (click)="suspendLender(lender)">
+                        <span>⏸️</span>
+                        Suspend
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- No Lenders State -->
+          <ng-template #noLenders>
+            <div class="text-center mt-lg">
+              <div style="font-size: 4rem; margin-bottom: 20px;">🏦</div>
+              <h3>No Lenders Found</h3>
+              <p>There are currently no lenders registered on the platform.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

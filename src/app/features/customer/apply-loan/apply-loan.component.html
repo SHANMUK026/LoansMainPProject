@@ -1,0 +1,77 @@
+<div class="apply-loan">
+  <!-- Header -->
+  <header class="loan-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>📝 Smart Loan Application</h1>
+        <p class="header-subtitle">Submit your loan application and check eligibility instantly</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Loan Form Card -->
+  <div class="loan-form-card">
+    <h2 class="form-title">Loan Application Form</h2>
+    <p class="form-subtitle">Fill in your loan requirements and we'll process your application</p>
+    
+    <form [formGroup]="loanForm" (ngSubmit)="onSubmit()" class="loan-form">
+      <div class="form-group">
+        <label class="form-label">
+          <span class="required">*</span>
+          Requested Amount (₹)
+        </label>
+        <div class="amount-input">
+          <input 
+            type="number" 
+            class="form-control" 
+            formControlName="requestedAmount"
+            placeholder="Enter loan amount (min: ₹10,000)"
+            [class.error]="loanForm.get('requestedAmount')?.invalid && loanForm.get('requestedAmount')?.touched"
+          >
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <span class="required">*</span>
+          Loan Purpose
+        </label>
+        <textarea 
+          class="form-control" 
+          formControlName="purpose"
+          placeholder="Describe the purpose of this loan (e.g., home renovation, business expansion, debt consolidation, education, medical expenses, vehicle purchase)"
+          [class.error]="loanForm.get('purpose')?.invalid && loanForm.get('purpose')?.touched"
+        ></textarea>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" [disabled]="loanForm.invalid || isSubmitting">
+          {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+    </form>
+    
+    <!-- Success Message -->
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+    
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,96 @@
+<div class="login-container">
+  <div class="login-background"></div>
+  
+  <div class="login-content">
+    <div class="login-header">
+      <h1 class="login-title">Welcome to LoanEligibility</h1>
+      <p class="login-subtitle">Choose your role and sign in</p>
+      <div class="login__actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Home
+        </button>
+      </div>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="role-selector" *ngIf="!selectedRole">
+      <h3>Select Your Role</h3>
+      <div class="role-options">
+        <div class="role-option" (click)="selectRole('BORROWER')">
+          <div class="role-icon">👤</div>
+          <h4>Borrower</h4>
+          <p>Apply for loans and check eligibility</p>
+        </div>
+        <div class="role-option" (click)="selectRole('LENDER')">
+          <div class="role-icon">🏦</div>
+          <h4>Lender</h4>
+          <p>Set rules and manage applications</p>
+        </div>
+        <div class="role-option" (click)="selectRole('ADMIN')">
+          <div class="role-icon">⚙️</div>
+          <h4>Admin</h4>
+          <p>System management and monitoring</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="selectedRole">
+      <div class="form-header">
+        <button type="button" class="back-btn" (click)="backToRoleSelection()">← Back</button>
+        <h2>{{ getRoleDisplayName(selectedRole) }} Login</h2>
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+          <input 
+            type="text" 
+            id="username" 
+            formControlName="username" 
+            placeholder="Enter your username"
+            [class.invalid]="isFieldInvalid('username')"
+          >
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('username')">
+          {{ getFieldError('username') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password" 
+            formControlName="password" 
+            placeholder="Enter your password"
+            [class.invalid]="isFieldInvalid('password')"
+          >
+          <button type="button" class="password-toggle" (click)="togglePassword()">
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('password')">
+          {{ getFieldError('password') }}
+        </div>
+      </div>
+
+      <button type="submit" class="login-btn" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Sign In as {{ getRoleDisplayName(selectedRole) }}</span>
+        <span *ngIf="isLoading" class="loading-spinner">⏳</span>
+      </button>
+
+      <div class="error-message" *ngIf="errorMessage" class="global-error">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-footer">
+        <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+      </div>
+    </form>
+  </div>
+</div>

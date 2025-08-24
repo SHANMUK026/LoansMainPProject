@@ -1,0 +1,186 @@
+<div class="lender-rules">
+  <!-- Header -->
+  <header class="rules-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>🏦 Lender Rules Management</h1>
+        <p class="header-subtitle">Set and manage your loan eligibility criteria</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="rules-content">
+    <!-- Add Rule Button -->
+    <div class="add-rule-section" *ngIf="!isAdding && !isEditing">
+      <button class="btn-add-rule" (click)="addRule()">
+        <span class="add-icon">➕</span>
+        Add New Rule
+      </button>
+    </div>
+
+    <!-- Rules Form -->
+    <div class="rules-form" *ngIf="isAdding || isEditing">
+      <h2 class="form-title">
+        {{ isAdding ? 'Add New Rule' : 'Edit Rule' }}
+      </h2>
+      
+      <form [formGroup]="ruleForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Minimum Salary (₹)</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="minSalary"
+              placeholder="Enter minimum salary requirement"
+              [class.error]="ruleForm.get('minSalary')?.invalid && ruleForm.get('minSalary')?.touched"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Maximum Loan Amount (₹)</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="maxLoanAmount"
+              placeholder="Enter maximum loan amount"
+              [class.error]="ruleForm.get('maxLoanAmount')?.invalid && ruleForm.get('maxLoanAmount')?.touched"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Minimum Credit Score</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="minCreditScore"
+              placeholder="Enter minimum credit score"
+              [class.error]="ruleForm.get('minCreditScore')?.invalid && ruleForm.get('minCreditScore')?.touched"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Minimum Age</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="minAge"
+              placeholder="Enter minimum age"
+              [class.error]="ruleForm.get('minAge')?.invalid && ruleForm.get('minAge')?.touched"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Maximum Age</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="maxAge"
+              placeholder="Enter maximum age"
+              [class.error]="ruleForm.get('maxAge')?.invalid && ruleForm.get('maxAge')?.touched"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Rule Status</label>
+            <select class="form-control" formControlName="isActive">
+              <option [value]="true">Active</option>
+              <option [value]="false">Inactive</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn-submit" [disabled]="ruleForm.invalid || isSaving">
+            {{ isSaving ? 'Saving...' : (isAdding ? 'Create Rule' : 'Update Rule') }}
+          </button>
+          <button type="button" class="btn-cancel" (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+    
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Rules List -->
+    <div class="rules-list">
+      <h2 class="list-title">Your Current Rules</h2>
+      
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="isLoading">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading your rules...</p>
+      </div>
+      
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!isLoading && rules.length === 0">
+        <div class="empty-icon">📋</div>
+        <h3 class="empty-title">No Rules Yet</h3>
+        <p class="empty-text">Start by creating your first loan eligibility rule to attract borrowers!</p>
+      </div>
+      
+      <!-- Rules Grid -->
+      <div class="rules-grid" *ngIf="!isLoading && rules.length > 0">
+        <div class="rule-card" *ngFor="let rule of rules">
+          <div class="rule-header">
+            <span class="rule-id">Rule #{{ rule.id }}</span>
+            <div class="rule-status">
+              <span>{{ rule.isActive ? 'Active' : 'Inactive' }}</span>
+              <div class="status-toggle" [class.active]="rule.isActive"></div>
+            </div>
+          </div>
+          
+          <div class="rule-details">
+            <div class="detail-item">
+              <span class="detail-label">Min Salary</span>
+              <span class="detail-value">₹{{ rule.minSalary.toLocaleString() }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">Max Loan</span>
+              <span class="detail-value">₹{{ rule.maxLoanAmount.toLocaleString() }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">Min Credit</span>
+              <span class="detail-value">{{ rule.minCreditScore }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="detail-label">Age Range</span>
+              <span class="detail-value">{{ rule.minAge }} - {{ rule.maxAge }}</span>
+            </div>
+          </div>
+          
+          <div class="rule-actions">
+            <button class="btn-edit" (click)="editRule(rule)">
+              ✏️ Edit
+            </button>
+            <button class="btn-delete" (click)="deleteRule(rule.id)">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

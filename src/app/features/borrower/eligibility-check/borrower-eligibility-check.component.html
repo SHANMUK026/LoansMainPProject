@@ -1,0 +1,273 @@
+<div class="borrower-eligibility-check">
+  <!-- Header -->
+  <header class="eligibility-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>🔍 Eligibility Check</h1>
+        <p class="header-subtitle">Check which lenders you qualify for based on your profile</p>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">←</span>
+          Back to Dashboard
+        </button>
+        <button class="logout-btn" type="button" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Overall Eligibility Summary -->
+  <div class="overall-summary" *ngIf="!isLoading && eligibilityResults.length > 0">
+    <div class="summary-card">
+      <div class="summary-header">
+        <h3>🎯 Your Overall Eligibility</h3>
+        <p>Based on your profile assessment</p>
+      </div>
+      
+      <div class="summary-content">
+        <div class="overall-score">
+          <div class="score-circle" [class]="getOverallEligibilityClass()">
+            <span class="score-number">{{ getOverallEligibilityScore() }}</span>
+            <span class="score-label">Score</span>
+          </div>
+          <div class="score-details">
+            <h4 [class]="getOverallEligibilityClass()">{{ getOverallEligibilityMessage() }}</h4>
+            <div class="eligibility-stats">
+              <span class="stat-item">
+                <span class="stat-number">{{ getEligibleCount() }}</span>
+                <span class="stat-label">Eligible Lenders</span>
+              </span>
+              <span class="stat-item">
+                <span class="stat-number">{{ getTotalCount() }}</span>
+                <span class="stat-label">Total Lenders</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-actions">
+          <button class="btn-secondary" (click)="viewDetailedResults()">
+            {{ showDetailedResults ? 'Hide Details' : 'View Detailed Results' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <h3>Checking Your Eligibility</h3>
+      <p>Analyzing your profile against lender requirements...</p>
+    </div>
+  </div>
+
+  <!-- Eligibility Results -->
+  <div class="eligibility-results" *ngIf="!isLoading && eligibilityResults.length > 0">
+    <div class="results-header">
+      <h3>🏦 Lender Eligibility Results</h3>
+      <p>Detailed breakdown of your eligibility with each lender</p>
+    </div>
+    
+    <div class="results-grid">
+      <div 
+        *ngFor="let result of eligibilityResults" 
+        class="result-card"
+        [class.eligible]="result.eligible"
+        [class.not-eligible]="!result.eligible"
+      >
+        <!-- Lender Header -->
+        <div class="lender-header">
+          <div class="lender-info">
+            <h4>{{ result.lenderName }}</h4>
+            <div class="eligibility-badge" [class]="result.eligible ? 'eligible' : 'not-eligible'">
+              {{ result.eligible ? '✅ Eligible' : '❌ Not Eligible' }}
+            </div>
+          </div>
+          <div class="eligibility-score">
+            <span class="score-label">Score</span>
+            <span class="score-value" [class]="getEligibilityClass(result.eligibilityScore)">
+              {{ result.eligibilityScore }}%
+            </span>
+          </div>
+        </div>
+        
+        <!-- Loan Details -->
+        <div class="loan-details">
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="detail-label">Max Loan Amount:</span>
+              <span class="detail-value">{{ formatCurrency(result.maxLoanAmount) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Interest Rate:</span>
+              <span class="detail-value rate">{{ result.interestRate }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="detail-label">Processing Fee:</span>
+              <span class="detail-value">{{ result.processingFee }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Risk Level:</span>
+              <span class="detail-value risk" [class]="getRiskClass(result.riskLevel)">
+                {{ getRiskIcon(result.riskLevel) }} {{ result.riskLevel }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="detail-label">Approval Time:</span>
+              <span class="detail-value">{{ result.approvalTime }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Requirements -->
+        <div class="requirements-section">
+          <h5>Requirements:</h5>
+          <ul class="requirements-list">
+            <li *ngFor="let requirement of result.requirements">{{ requirement }}</li>
+          </ul>
+        </div>
+        
+        <!-- Reasons -->
+        <div class="reasons-section" *ngIf="result.reasons.length > 0">
+          <h5>{{ result.eligible ? 'Why You Qualify:' : 'Why You Don\'t Qualify:' }}</h5>
+          <ul class="reasons-list">
+            <li *ngFor="let reason of result.reasons">{{ reason }}</li>
+          </ul>
+        </div>
+        
+        <!-- Actions -->
+        <div class="result-actions">
+          <button 
+            *ngIf="result.eligible"
+            class="btn-primary" 
+            (click)="applyToLender(result.lenderId)"
+          >
+            🚀 Apply Now
+          </button>
+          <button 
+            *ngIf="!result.eligible"
+            class="btn-secondary" 
+            (click)="applyToLender(result.lenderId)"
+          >
+            📝 Apply Anyway
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Results Section -->
+  <div class="detailed-results" *ngIf="showDetailedResults && !isLoading">
+    <div class="detailed-card">
+      <div class="detailed-header">
+        <h3>📊 Detailed Analysis</h3>
+        <p>Comprehensive breakdown of your eligibility factors</p>
+      </div>
+      
+      <div class="analysis-grid">
+        <div class="analysis-item">
+          <h4>Credit Score Analysis</h4>
+          <div class="analysis-content">
+            <p>Your credit score of <strong>{{ currentUser?.creditScore || 'N/A' }}</strong> affects your eligibility with different lenders.</p>
+            <div class="score-breakdown">
+              <span class="breakdown-item">
+                <span class="item-label">Excellent (750+):</span>
+                <span class="item-value">3 lenders</span>
+              </span>
+              <span class="breakdown-item">
+                <span class="item-label">Good (650-749):</span>
+                <span class="item-value">2 lenders</span>
+              </span>
+              <span class="breakdown-item">
+                <span class="item-label">Fair (550-649):</span>
+                <span class="item-value">1 lender</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="analysis-item">
+          <h4>Income Analysis</h4>
+          <div class="analysis-content">
+            <p>Your monthly income of <strong>{{ formatCurrency(currentUser?.monthlyIncome || 0) }}</strong> determines loan amounts.</p>
+            <div class="income-breakdown">
+              <span class="breakdown-item">
+                <span class="item-label">High Income (₹50,000+):</span>
+                <span class="item-value">2 lenders</span>
+              </span>
+              <span class="breakdown-item">
+                <span class="item-label">Medium Income (₹25,000-49,999):</span>
+                <span class="item-value">3 lenders</span>
+              </span>
+              <span class="breakdown-item">
+                <span class="item-label">Low Income (₹15,000-24,999):</span>
+                <span class="item-value">1 lender</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="analysis-item">
+          <h4>Employment Analysis</h4>
+          <div class="analysis-content">
+            <p>Your employment status: <strong>{{ currentUser?.employmentStatus || 'N/A' }}</strong></p>
+            <div class="employment-breakdown">
+              <span class="breakdown-item">
+                <span class="item-label">Employed:</span>
+                <span class="item-value">4 lenders</span>
+              </span>
+              <span class="breakdown-item">
+                <span class="item-label">Self-Employed:</span>
+                <span class="item-value">2 lenders</span>
+              </span>
+              <span class="breakdown-item">
+                <span class="item-label">Student:</span>
+                <span class="item-value">1 lender</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detailed-actions">
+        <button class="btn-primary" (click)="goBack()">
+          Back to Dashboard
+        </button>
+        <button class="btn-secondary" (click)="applyToLender(0)">
+          Apply for Loan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && eligibilityResults.length === 0">
+    <div class="empty-icon">🔍</div>
+    <h3>No Eligibility Results</h3>
+    <p>Unable to check eligibility. Please try again or contact support.</p>
+    <button class="btn-primary" (click)="checkEligibility()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="errorMessage">
+    <div class="error-icon">❌</div>
+    <h3>Error Checking Eligibility</h3>
+    <p>{{ errorMessage }}</p>
+    <button class="btn-secondary" (click)="checkEligibility()">
+      Try Again
+    </button>
+  </div>
+</div>

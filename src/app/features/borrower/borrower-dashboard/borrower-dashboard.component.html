@@ -1,0 +1,137 @@
+<div class="borrower-dashboard">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="dashboard-title">Borrower Dashboard</h1>
+        <p class="welcome-text">Welcome back, {{ currentUser?.username }}! 👋</p>
+      </div>
+      <div class="header-right">
+        <div class="user-info">
+          <span class="user-name">{{ currentUser?.username }}</span>
+          <span class="user-role">Borrower</span>
+        </div>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Actions -->
+  <section class="quick-actions">
+    <div class="action-cards">
+      <div class="action-card primary" (click)="applyForLoan()">
+        <div class="action-icon">📝</div>
+        <h3>Apply for Loan</h3>
+        <p>Submit a new loan application</p>
+      </div>
+      <div class="action-card secondary" (click)="checkEligibility()">
+        <div class="action-icon">🔍</div>
+        <h3>Check Eligibility</h3>
+        <p>See which lenders you qualify for</p>
+      </div>
+      <div class="action-card info" (click)="openLoanCalculator()">
+        <div class="action-icon">🧮</div>
+        <h3>Loan Calculator</h3>
+        <p>Calculate EMI and check eligibility</p>
+      </div>
+      <div class="action-card success" (click)="openSmartMatching()">
+        <div class="action-icon">🎯</div>
+        <h3>Smart Matching</h3>
+        <p>Find your perfect lender match</p>
+      </div>
+      <div class="action-card warning" (click)="openDocumentManagement()">
+        <div class="action-icon">📁</div>
+        <h3>Documents</h3>
+        <p>Manage your loan documents</p>
+      </div>
+      <div class="action-card tertiary" (click)="viewProfile()">
+        <div class="action-icon">📊</div>
+        <h3>My Profile</h3>
+        <p>Update your information</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content">
+    <!-- Loan Applications -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2>My Loan Applications</h2>
+        <button class="btn-primary" (click)="applyForLoan()">+ New Application</button>
+      </div>
+      
+      <div class="applications-grid" *ngIf="!isLoading">
+        <div class="application-card" *ngFor="let app of loanApplications" (click)="viewApplication(app.id)">
+          <div class="app-header">
+            <span class="app-id">#{{ app.id }}</span>
+            <span class="app-status" [class]="getStatusClass(app.status)">
+              {{ getStatusIcon(app.status) }} {{ app.status }}
+            </span>
+          </div>
+          <div class="app-details">
+            <h4>₹{{ app.amount.toLocaleString() }}</h4>
+            <p class="app-purpose">{{ app.purpose }}</p>
+            <p class="app-lender">Lender: {{ app.lenderName }}</p>
+            <p class="app-date">Applied: {{ app.appliedDate | date:'MMM dd, yyyy' }}</p>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="loanApplications.length === 0">
+          <div class="empty-icon">📋</div>
+          <h3>No Applications Yet</h3>
+          <p>Start your journey by applying for your first loan!</p>
+          <button class="btn-primary" (click)="applyForLoan()">Apply Now</button>
+        </div>
+      </div>
+      
+      <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Loading your applications...</p>
+      </div>
+    </section>
+
+    <!-- Eligible Lenders -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2>Lenders You Qualify For</h2>
+        <button class="btn-secondary" (click)="checkEligibility()">Refresh</button>
+      </div>
+      
+      <div class="lenders-grid" *ngIf="!isLoading">
+        <div class="lender-card" *ngFor="let lender of eligibleLenders">
+          <div class="lender-header">
+            <h3>{{ lender.name }}</h3>
+            <span class="lender-badge">Eligible</span>
+          </div>
+          <div class="lender-details">
+            <div class="detail-row">
+              <span class="detail-label">Max Loan:</span>
+              <span class="detail-value">₹{{ lender.maxLoanAmount.toLocaleString() }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Interest Rate:</span>
+              <span class="detail-value">{{ lender.interestRate }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Processing Fee:</span>
+              <span class="detail-value">{{ lender.processingFee }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Min Salary:</span>
+              <span class="detail-value">₹{{ lender.minSalary.toLocaleString() }}</span>
+            </div>
+          </div>
+          <button class="btn-apply" (click)="applyForLoan()">Apply Now</button>
+        </div>
+        
+        <div class="empty-state" *ngIf="eligibleLenders.length === 0">
+          <div class="empty-icon">🏦</div>
+          <h3>No Lenders Found</h3>
+          <p>Check your eligibility to see available lenders</p>
+          <button class="btn-primary" (click)="checkEligibility()">Check Eligibility</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
