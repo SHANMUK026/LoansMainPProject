@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, publicGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './features/auth/login/login.component';
@@ -26,9 +26,21 @@ import { LenderRulesComponent } from './features/lender/rules/lender-rules.compo
 import { LenderAnalyticsComponent } from './features/lender/analytics/lender-analytics.component';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  { 
+    path: '', 
+    component: LandingComponent,
+    canActivate: [publicGuard]
+  },
+  { 
+    path: 'login', 
+    component: LoginComponent,
+    canActivate: [publicGuard]
+  },
+  { 
+    path: 'register', 
+    component: RegisterComponent,
+    canActivate: [publicGuard]
+  },
   { 
     path: 'dashboard', 
     component: DashboardComponent,

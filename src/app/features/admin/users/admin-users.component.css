@@ -63,10 +63,20 @@
   color: white;
 }
 
-.btn--danger:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
-}
+       .btn--danger:hover {
+         transform: translateY(-2px);
+         box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+       }
+
+       .btn--warning {
+         background: linear-gradient(135deg, #f59e0b, #d97706);
+         color: white;
+       }
+
+       .btn--warning:hover {
+         transform: translateY(-2px);
+         box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+       }
 
 /* Enhanced Main Content */
 .main-content {
@@ -228,10 +238,30 @@
   color: white;
 }
 
-.badge--user {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  color: white;
-}
+       .badge--user {
+         background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+         color: white;
+       }
+
+       .badge--warning {
+         background: linear-gradient(135deg, #f59e0b, #d97706);
+         color: white;
+       }
+
+       .badge--error {
+         background: linear-gradient(135deg, #ef4444, #dc2626);
+         color: white;
+       }
+
+       .badge--info {
+         background: linear-gradient(135deg, #3b82f6, #2563eb);
+         color: white;
+       }
+
+       .badge--pending {
+         background: linear-gradient(135deg, #6b7280, #4b5563);
+         color: white;
+       }
 
 /* Enhanced Form Actions */
 .form__actions {

@@ -64,22 +64,42 @@
                       {{ getLenderStatus(lender) }}
                     </span>
                   </td>
-                  <td class="table__cell">
-                    <div class="form__actions">
-                      <button class="btn btn--ghost" (click)="viewLenderDetails(lender)">
-                        <span>👁️</span>
-                        View
-                      </button>
-                      <button class="btn btn--ghost" (click)="approveLender(lender)">
-                        <span>✅</span>
-                        Approve
-                      </button>
-                      <button class="btn btn--danger" (click)="suspendLender(lender)">
-                        <span>⏸️</span>
-                        Suspend
-                      </button>
-                    </div>
-                  </td>
+                                           <td class="table__cell">
+                           <div class="form__actions">
+                             <button class="btn btn--ghost" (click)="viewLenderDetails(lender)">
+                               <span>👁️</span>
+                               View
+                             </button>
+                             <button class="btn btn--ghost" (click)="approveLender(lender)">
+                               <span>✅</span>
+                               Approve
+                             </button>
+                             <button class="btn btn--warning" (click)="rejectLender(lender)">
+                               <span>❌</span>
+                               Reject
+                             </button>
+                             <button class="btn btn--ghost" (click)="activateLender(lender)">
+                               <span>🔄</span>
+                               Activate
+                             </button>
+                             <button class="btn btn--warning" (click)="suspendLender(lender)">
+                               <span>⏸️</span>
+                               Suspend
+                             </button>
+                             <button class="btn btn--ghost" (click)="verifyDocuments(lender)">
+                               <span>📋</span>
+                               Verify Docs
+                             </button>
+                             <button class="btn btn--ghost" (click)="viewLenderPerformance(lender)">
+                               <span>📊</span>
+                               Performance
+                             </button>
+                             <button class="btn btn--danger" (click)="deleteLender(lender)">
+                               <span>🗑️</span>
+                               Delete
+                             </button>
+                           </div>
+                         </td>
                 </tr>
               </tbody>
             </table>

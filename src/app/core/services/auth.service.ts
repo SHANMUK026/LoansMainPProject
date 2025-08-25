@@ -18,18 +18,63 @@ export class AuthService {
     // Initialize current user from localStorage
     this.currentUserSubject.next(this.getStoredUser());
     this.token = this.getStoredToken();
+    
+    // Check if stored session is still valid
+    this.validateStoredSession();
   }
 
   get currentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
+  get authToken(): string | null {
+    return this.token;
+  }
+
   get isAuthenticated(): boolean {
-    return !!this.currentUser;
+    // Check if user exists and token is valid
+    // If no token exists, user is not authenticated
+    if (!this.token) return false;
+    
+    // If no current user, user is not authenticated
+    if (!this.currentUser) return false;
+    
+    // Check if token is still valid
+    return this.isTokenValid();
   }
 
   hasRole(role: string): boolean {
     return this.currentUser?.role === role || false;
+  }
+
+  private isTokenValid(): boolean {
+    if (!this.token) return false;
+    
+    try {
+      // Extract timestamp from token (format: jwt-token-{id}-{timestamp})
+      const parts = this.token.split('-');
+      if (parts.length < 4) return false;
+      
+      const timestamp = parseInt(parts[3]);
+      const currentTime = Date.now();
+      const tokenAge = currentTime - timestamp;
+      
+      // Token expires after 24 hours (86400000 ms)
+      const maxAge = 24 * 60 * 60 * 1000;
+      
+      return tokenAge < maxAge;
+    } catch (error) {
+      console.error('Error validating token:', error);
+      return false;
+    }
+  }
+
+  private validateStoredSession(): void {
+    // If stored session is invalid, clear it
+    if (this.currentUser && this.token && !this.isTokenValid()) {
+      console.log('Stored session expired, clearing...');
+      this.logout();
+    }
   }
 
   login(username: string, password: string): Observable<AuthResponse> {
@@ -127,6 +172,21 @@ export class AuthService {
     this.setStoredUser(null);
     this.setStoredToken(null);
     console.log('User logged out successfully');
+  }
+
+  refreshToken(): void {
+    if (this.currentUser && this.token) {
+      // Generate a new token with current timestamp
+      const newToken = `jwt-token-${this.currentUser.id}-${Date.now()}`;
+      this.token = newToken;
+      this.setStoredToken(newToken);
+      console.log('Token refreshed successfully');
+    }
+  }
+
+  // Public method to validate and clear expired sessions
+  public validateAndClearExpiredSessions(): void {
+    this.validateStoredSession();
   }
 
   // Helper method to check if user has any of the required roles
