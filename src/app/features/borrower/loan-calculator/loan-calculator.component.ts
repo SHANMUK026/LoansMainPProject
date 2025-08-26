@@ -38,6 +38,21 @@ export class LoanCalculatorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // SECURITY CHECK: Verify user is authenticated and has BORROWER role
+    if (!this.authService.isAuthenticated) {
+      console.log('LoanCalculator: User not authenticated, redirecting to login');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (!this.authService.hasRole('BORROWER')) {
+      console.log('LoanCalculator: User does not have BORROWER role, redirecting to dashboard');
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
+    console.log('LoanCalculator: User authenticated and authorized');
+    
     // Initialize with default values
     this.calculatorForm.patchValue({
       loanAmount: 100000,

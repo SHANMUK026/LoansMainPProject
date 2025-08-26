@@ -42,6 +42,20 @@ export class LenderRulesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // SECURITY CHECK: Verify user is authenticated and has LENDER role
+    if (!this.authService.isAuthenticated) {
+      console.log('LenderRules: User not authenticated, redirecting to login');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (!this.authService.hasRole('LENDER')) {
+      console.log('LenderRules: User does not have LENDER role, redirecting to dashboard');
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
+    console.log('LenderRules: User authenticated and authorized');
     this.loadRules();
   }
 

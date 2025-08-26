@@ -60,8 +60,8 @@ export class LenderDashboardComponent implements OnInit {
     batchSize: 10
   };
 
-  ruleForm: FormGroup;
-  applicationForm: FormGroup;
+  ruleForm!: FormGroup;
+  applicationForm!: FormGroup;
   
   // New features
   // showBulkProcessing = false;

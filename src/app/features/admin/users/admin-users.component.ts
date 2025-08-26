@@ -24,6 +24,20 @@ export class AdminUsersComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // SECURITY CHECK: Verify user is authenticated and has ADMIN role
+    if (!this.authService.isAuthenticated) {
+      console.log('AdminUsers: User not authenticated, redirecting to login');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (!this.authService.hasRole('ADMIN')) {
+      console.log('AdminUsers: User does not have ADMIN role, redirecting to dashboard');
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
+    console.log('AdminUsers: User authenticated and authorized');
     this.loadUsers();
   }
 

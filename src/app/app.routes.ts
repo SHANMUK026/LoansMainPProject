@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard, publicGuard } from './core/guards/auth.guard';
-import { roleGuard } from './core/guards/role.guard';
+import { AuthGuard, PublicGuard } from './core/guards/auth.guard';
+import { RoleGuard } from './core/guards/role.guard';
 import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
@@ -29,71 +29,71 @@ export const routes: Routes = [
   { 
     path: '', 
     component: LandingComponent,
-    canActivate: [publicGuard]
+    canActivate: [PublicGuard]
   },
   { 
     path: 'login', 
     component: LoginComponent,
-    canActivate: [publicGuard]
+    canActivate: [PublicGuard]
   },
   { 
     path: 'register', 
     component: RegisterComponent,
-    canActivate: [publicGuard]
+    canActivate: [PublicGuard]
   },
   { 
     path: 'dashboard', 
     component: DashboardComponent,
-    canActivate: [authGuard]
+    canActivate: [AuthGuard]
   },
   
   // Borrower routes - Updated to use consistent prefix
   { 
     path: 'borrower/dashboard', 
     component: BorrowerDashboardComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   { 
     path: 'borrower/smart-matching', 
     component: SmartMatchingComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   { 
     path: 'borrower/documents', 
     component: DocumentManagementComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   { 
     path: 'borrower/loan-calculator', 
     component: LoanCalculatorComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   { 
     path: 'borrower/profile', 
     component: BorrowerProfileComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   { 
     path: 'borrower/apply-loan', 
     component: BorrowerApplyLoanComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   { 
     path: 'borrower/my-applications', 
     component: BorrowerMyApplicationsComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   { 
     path: 'borrower/eligibility-check', 
     component: BorrowerEligibilityCheckComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['BORROWER'] }
   },
   
@@ -101,25 +101,25 @@ export const routes: Routes = [
   { 
     path: 'lender/dashboard', 
     component: LenderDashboardComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['LENDER'] }
   },
   { 
     path: 'lender/rules', 
     component: LenderRulesComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['LENDER'] }
   },
   { 
     path: 'lender/profile', 
     component: LenderProfileComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['LENDER'] }
   },
   { 
     path: 'lender/analytics', 
     component: LenderAnalyticsComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['LENDER'] }
   },
   
@@ -127,43 +127,43 @@ export const routes: Routes = [
   { 
     path: 'admin/dashboard', 
     component: AdminDashboardComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
   { 
     path: 'admin/analytics', 
     component: AnalyticsDashboardComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
   { 
     path: 'admin/users', 
     component: AdminUsersComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
   { 
     path: 'admin/lenders', 
     component: AdminLendersComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
   { 
     path: 'admin/applications', 
     component: AdminApplicationsComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
   { 
     path: 'admin/settings', 
     component: AdminSettingsComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
   { 
     path: 'admin/reports', 
     component: AdminReportsComponent,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { roles: ['ADMIN'] }
   },
   
